@@ -148,7 +148,7 @@ Loads pretrained UMA backbone (`uma-m-1p1` by default), runs `backbone.forward()
 Compress variable-length atom embeddings **(N, 128)** → single crystal vector **(1, 128)**.
 
 ### `atom_attention_compressor.py`
-`AtomAttentionCompressor`: single-head attention over atoms — mean-pool query, K/V from all atoms, output is the attention message **m = a V** (steps 1–4 only; no combine step). Can run offline batch with 70/15/15 split.
+`AtomAttentionCompressor`: single-head attention over atoms — mean-pool query, K/V from all atoms, output is the attention message **m = a V** . Can run offline batch with 70/15/15 split.
 
 ### `uma_attn_compress_N_0000_0050.py`
 Entry point for structures with **0 ≤ N < 50**.
