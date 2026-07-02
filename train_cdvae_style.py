@@ -61,7 +61,6 @@ N_MAX = 50
 NUM_N_CLASSES = N_MAX + 1
 
 W_VAE = 0.01
-W_ATTN = 0.1
 W_ATOM = 1.0
 W_LATTICE = 10.0
 
@@ -119,8 +118,6 @@ class VAEAtomCompressor(nn.Module):
         self.W_q = nn.Linear(d_model, d_model, bias=False)
         self.W_k = nn.Linear(d_model, d_model, bias=False)
         self.W_v = nn.Linear(d_model, d_model, bias=False)
-        self.W_update = nn.Linear(2 * d_model, d_model, bias=True)
-        self.layer_norm = nn.LayerNorm(d_model)
 
         self.fc_mu = nn.Linear(d_model, latent_dim)
         self.fc_logvar = nn.Linear(d_model, latent_dim)
@@ -145,15 +142,11 @@ class VAEAtomCompressor(nn.Module):
         attn_weights = F.softmax(scores, dim=-1)
         message = attn_weights @ values
 
-        combined = torch.cat([target, message], dim=-1)
-        delta = self.W_update(combined)
-        compressed = self.layer_norm(target + delta)
-
-        mu = self.fc_mu(compressed)
-        logvar = self.fc_logvar(compressed)
+        mu = self.fc_mu(message)
+        logvar = self.fc_logvar(message)
         z = self.reparameterize(mu, logvar)
 
-        return z, mu, logvar, attn_weights, compressed
+        return z, mu, logvar, attn_weights, message
 
 
 class AtomCountClassifier(nn.Module):
@@ -222,11 +215,6 @@ def kl_divergence(mu: torch.Tensor, logvar: torch.Tensor) -> torch.Tensor:
     return -0.5 * torch.sum(1 + logvar - mu.pow(2) - logvar.exp())
 
 
-def attention_entropy_loss(attn_weights: torch.Tensor) -> torch.Tensor:
-    p = attn_weights.clamp(min=1e-8)
-    return -torch.sum(p * torch.log(p))
-
-
 def atom_count_classification_loss(
     logits: torch.Tensor,
     true_n: torch.Tensor,
@@ -254,7 +242,6 @@ def lattice_mse_loss(pred_lattice: torch.Tensor, true_lattice: torch.Tensor) -> 
 class LossBreakdown:
     total: torch.Tensor
     vae_kld: torch.Tensor
-    attn_entropy: torch.Tensor
     atom_ce: torch.Tensor
     lattice_mse: torch.Tensor
 
@@ -262,7 +249,6 @@ class LossBreakdown:
         return {
             "total": float(self.total.detach().cpu()),
             "vae_kld": float(self.vae_kld.detach().cpu()),
-            "attn_entropy": float(self.attn_entropy.detach().cpu()),
             "atom_ce": float(self.atom_ce.detach().cpu()),
             "lattice_mse": float(self.lattice_mse.detach().cpu()),
         }
@@ -271,20 +257,17 @@ class LossBreakdown:
 def compute_multitask_loss(
     mu: torch.Tensor,
     logvar: torch.Tensor,
-    attn_weights: torch.Tensor,
     n_logits: torch.Tensor,
     true_n: torch.Tensor,
     pred_lattice: torch.Tensor,
     true_lattice: torch.Tensor,
     *,
     w_vae: float = W_VAE,
-    w_attn: float = W_ATTN,
     w_atom: float = W_ATOM,
     w_lattice: float = W_LATTICE,
     ablate_lattice: bool = False,
 ) -> LossBreakdown:
     vae_kld = kl_divergence(mu, logvar)
-    attn_entropy = attention_entropy_loss(attn_weights)
     atom_ce = atom_count_classification_loss(n_logits, true_n)
     lattice_mse = (
         torch.zeros((), device=n_logits.device)
@@ -294,14 +277,12 @@ def compute_multitask_loss(
 
     total = (
         w_vae * vae_kld
-        + w_attn * attn_entropy
         + w_atom * atom_ce
         + w_lattice * lattice_mse
     )
     return LossBreakdown(
         total=total,
         vae_kld=vae_kld,
-        attn_entropy=attn_entropy,
         atom_ce=atom_ce,
         lattice_mse=lattice_mse,
     )
@@ -487,7 +468,6 @@ def save_attention_examples(
 class EpochMetrics:
     total: float = 0.0
     vae_kld: float = 0.0
-    attn_entropy: float = 0.0
     atom_ce: float = 0.0
     lattice_mse: float = 0.0
     n_samples: int = 0
@@ -500,7 +480,6 @@ class EpochMetrics:
         d = breakdown.as_dict()
         self.total += d["total"]
         self.vae_kld += d["vae_kld"]
-        self.attn_entropy += d["attn_entropy"]
         self.atom_ce += d["atom_ce"]
         self.lattice_mse += d["lattice_mse"]
         self.n_samples += 1
@@ -520,7 +499,6 @@ class EpochMetrics:
         out = {
             "total": self.total / n,
             "vae_kld": self.vae_kld / n,
-            "attn_entropy": self.attn_entropy / n,
             "atom_ce": self.atom_ce / n,
             "lattice_mse": self.lattice_mse / n,
             "n_samples": float(self.n_samples),
@@ -601,7 +579,6 @@ def run_epoch(
             breakdown = compute_multitask_loss(
                 mu,
                 logvar,
-                attn,
                 n_logits,
                 true_n.unsqueeze(0) if true_n.dim() == 0 else true_n.reshape(1),
                 pred_l,
@@ -693,7 +670,6 @@ def save_checkpoint(
             "n_min": N_MIN,
             "n_max": N_MAX,
             "w_vae": W_VAE,
-            "w_attn": W_ATTN,
             "w_atom": W_ATOM,
             "w_lattice": W_LATTICE,
             "ablate_lattice": args.ablate_lattice,
@@ -919,7 +895,7 @@ def main() -> None:
     print("=== CDVAE-style VAE-Attention training ===")
     print(f"device={device}  epochs={args.epochs}  lr={args.lr}  lr_schedule={args.lr_schedule}")
     print(
-        f"weights: w_vae={W_VAE} w_attn={W_ATTN} w_atom={W_ATOM} w_lattice={W_LATTICE} "
+        f"weights: w_vae={W_VAE} w_atom={W_ATOM} w_lattice={W_LATTICE} "
         f"ablate_lattice={args.ablate_lattice}"
     )
     print(f"N classes: {NUM_N_CLASSES} (N in [{N_MIN}, {N_MAX}])")
