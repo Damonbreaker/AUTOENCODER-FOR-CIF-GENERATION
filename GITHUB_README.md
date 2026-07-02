@@ -148,7 +148,7 @@ Loads pretrained UMA backbone (`uma-m-1p1` by default), runs `backbone.forward()
 Compress variable-length atom embeddings **(N, 128)** → single crystal vector **(1, 128)**.
 
 ### `atom_attention_compressor.py`
-`AtomAttentionCompressor`: single-head attention over atoms (query from mean atom features, K/V from all atoms), LayerNorm residual update. Can run offline batch with 70/15/15 split.
+`AtomAttentionCompressor`: single-head attention over atoms — mean-pool query, K/V from all atoms, output is the attention message **m = a V** (steps 1–4 only; no combine step). Can run offline batch with 70/15/15 split.
 
 ### `uma_attn_compress_N_0000_0050.py`
 Entry point for structures with **0 ≤ N < 50**.
@@ -193,10 +193,8 @@ Jointly trains attention compressor, VAE head, N head, and L head for **100 epoc
 **Total loss:**
 
 \[
-\mathcal{L} = 0.01\,\mathrm{KL} + 0.1\,\mathcal{L}_{\mathrm{attn}} + 1.0\,(\mathrm{MSE}_N + \mathrm{Poisson}_N) + 10.0\,\mathrm{MSE}_L
+\mathcal{L} = 0.01\,\mathrm{KL} + 1.0\,(\mathrm{MSE}_N + \mathrm{Poisson}_N) + 10.0\,\mathrm{MSE}_L
 \]
-
-where \(\mathcal{L}_{\mathrm{attn}}\) is negative attention entropy (encourages peaked atom selection).
 
 ### `train_cdvae_style.py` (alternate)
 Same attention + VAE backbone, but **N** is predicted with **CrossEntropy** (51 classes) instead of MSE + Poisson — closer to CDVAE's `num_atom_loss`.
