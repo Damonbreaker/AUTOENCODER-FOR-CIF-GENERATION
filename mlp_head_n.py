@@ -14,7 +14,7 @@ from dataclasses import dataclass
 import torch
 import torch.nn as nn
 
-DEFAULT_LATENT_DIM = 64
+DEFAULT_LATENT_DIM = 128
 DEFAULT_HIDDEN_DIM = 128
 
 
@@ -83,7 +83,7 @@ def atom_count_loss(
 
 def _smoke_test(device: torch.device) -> None:
     decoder = AtomCountDecoder().to(device)
-    z = torch.randn(64, device=device)
+    z = torch.randn(128, device=device)
     true_n = torch.tensor(32.0, device=device)
     rate = decoder(z)
     breakdown = atom_count_loss(rate, true_n)
