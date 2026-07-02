@@ -48,7 +48,14 @@ from uma_split_utils import (  # noqa: E402
 
 
 class AtomAttentionCompressor(nn.Module):
-    """Compress UMA node_emb_l0 [N, d] -> crystal vector [1, d] via attention."""
+    """
+    Compress UMA node_emb_l0 [N, d] -> crystal vector [1, d] via attention (steps 1–4).
+
+    1. Mean pool:  t = mean(X)
+    2. Project:    q = t W_q, K = X W_k, V = X W_v
+    3. Attention:  a = softmax(q K^T / sqrt(d))
+    4. Message:    m = a V   <- compressed output (no step-5 combine)
+    """
 
     def __init__(self, d_model: int) -> None:
         super().__init__()
@@ -57,8 +64,6 @@ class AtomAttentionCompressor(nn.Module):
         self.W_q = nn.Linear(d_model, d_model, bias=False)
         self.W_k = nn.Linear(d_model, d_model, bias=False)
         self.W_v = nn.Linear(d_model, d_model, bias=False)
-        self.W_update = nn.Linear(2 * d_model, d_model, bias=True)
-        self.layer_norm = nn.LayerNorm(d_model)
 
     def forward(
         self,
@@ -80,13 +85,10 @@ class AtomAttentionCompressor(nn.Module):
         scores = (query @ keys.transpose(0, 1)) / self.scale
         attention_weights = F.softmax(scores, dim=-1)
         message = attention_weights @ values
-        combined = torch.cat([target, message], dim=-1)
-        delta = self.W_update(combined)
-        updated = self.layer_norm(target + delta)
 
         if return_attention:
-            return updated, attention_weights
-        return updated
+            return message, attention_weights
+        return message
 
 
 def build_compressor(in_dim: int) -> AtomAttentionCompressor:
