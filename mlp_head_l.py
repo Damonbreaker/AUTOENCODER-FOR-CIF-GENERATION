@@ -16,7 +16,7 @@ import torch.nn as nn
 
 from uma_train_dataset import LATTICE_DIM
 
-DEFAULT_LATENT_DIM = 64
+DEFAULT_LATENT_DIM = 128
 DEFAULT_HIDDEN_DIM = 128
 
 
@@ -69,7 +69,7 @@ def lattice_loss(
 
 def _smoke_test(device: torch.device) -> None:
     decoder = LatticeDecoder().to(device)
-    z = torch.randn(64, device=device)
+    z = torch.randn(128, device=device)
     true_l = torch.randn(LATTICE_DIM, device=device) * 0.5
     pred_l = decoder(z)
     breakdown = lattice_loss(pred_l, true_l)
