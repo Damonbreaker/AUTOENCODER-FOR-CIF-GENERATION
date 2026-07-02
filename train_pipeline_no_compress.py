@@ -2,7 +2,7 @@
 """
 VAE-Attention-Atom-Predictor training pipeline (Task 08) — no latent compression.
 
-Identical to train_pipeline.py except LATENT_DIM = D_MODEL (128).
+Identical to train_pipeline.py (both use LATENT_DIM = D_MODEL = 128).
 Reads Task 05 UMA outputs (*_uma_node.pt), Task 02 normalized lattice (L_norm),
 trains shared VAE + parallel heads for atom count N and lattice parameters.
 """
@@ -31,7 +31,7 @@ from uma_train_dataset import (
 )
 
 D_MODEL = 128
-LATENT_DIM = 128  
+LATENT_DIM = D_MODEL  # 128
 DEFAULT_OUT_ROOT = "outputs/vae_attn_no_compress"
 HIDDEN_DIM = 128
 N_MIN = 20
