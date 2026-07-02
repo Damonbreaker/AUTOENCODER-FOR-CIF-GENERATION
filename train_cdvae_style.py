@@ -52,7 +52,7 @@ except ImportError:  # pragma: no cover
 
 
 D_MODEL = 128
-LATENT_DIM = 64
+LATENT_DIM = D_MODEL  # 128 — no bottleneck compression (was 64)
 HIDDEN_DIM = 128
 
 # CDVAE aggregator: fc_num_atoms outputs max_atoms+1 logits; class index = N
