@@ -47,7 +47,7 @@ __all__ = [
 ]
 
 D_MODEL = 128
-LATENT_DIM = 64
+LATENT_DIM = D_MODEL  # 128 — no bottleneck compression (was 64)
 DEFAULT_OUT_ROOT = "outputs/vae_attn_atom_predictor_uma_nl"
 HIDDEN_DIM = 128
 N_MIN = 20
@@ -460,6 +460,7 @@ def train_pipeline(args: argparse.Namespace) -> dict[str, Any]:
 
     print("=== VAE-Attention-Atom-Predictor pipeline ===")
     print(f"device: {device}  epochs: {args.epochs}  lr: {args.lr}")
+    print(f"d_model={D_MODEL}  latent_dim={LATENT_DIM}")
     print(
         f"loss weights: w_vae={W_VAE}  w_atom={W_ATOM}  w_lattice={W_LATTICE}"
     )
@@ -604,6 +605,7 @@ def train_pipeline(args: argparse.Namespace) -> dict[str, Any]:
         "uma_in_dir": str(args.uma_in_dir.resolve()) if not args.synthetic else None,
         "lattice_root": str(run_kw["lattice_root"]) if run_kw["lattice_root"] else None,
         "d_model": d_model,
+        "latent_dim": LATENT_DIM,
         "epochs": args.epochs,
         "split_seed": args.seed,
         "train_frac": TRAIN_FRAC,
