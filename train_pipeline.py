@@ -58,7 +58,6 @@ VAL_FRAC = 0.15
 EPOCHS = 100
 CHECKPOINT_EVERY = 25
 W_VAE = 0.01
-W_ATTN = 0.1
 W_ATOM = 1.0
 W_LATTICE = 10.0
 
@@ -68,17 +67,10 @@ W_LATTICE = 10.0
 # ---------------------------------------------------------------------------
 
 
-def attention_entropy_loss(attn_weights: torch.Tensor) -> torch.Tensor:
-    """Negative entropy of attention distribution over atoms."""
-    p = attn_weights.clamp(min=1e-8)
-    return -torch.sum(p * torch.log(p))
-
-
 @dataclass
 class LossBreakdown:
     total: torch.Tensor
     vae_kld: torch.Tensor
-    attn_entropy: torch.Tensor
     atom_mse: torch.Tensor
     atom_poisson: torch.Tensor
     atom_total: torch.Tensor
@@ -88,7 +80,6 @@ class LossBreakdown:
         return {
             "total": float(self.total.detach().cpu()),
             "vae_kld": float(self.vae_kld.detach().cpu()),
-            "attn_entropy": float(self.attn_entropy.detach().cpu()),
             "atom_mse": float(self.atom_mse.detach().cpu()),
             "atom_poisson": float(self.atom_poisson.detach().cpu()),
             "atom_total": float(self.atom_total.detach().cpu()),
@@ -103,10 +94,8 @@ def compute_multitask_loss(
     true_L: torch.Tensor,
     mu: torch.Tensor,
     logvar: torch.Tensor,
-    attn_weights: torch.Tensor,
     *,
     w_vae: float = W_VAE,
-    w_attn: float = W_ATTN,
     w_atom: float = W_ATOM,
     w_lattice: float = W_LATTICE,
     mse_fn: nn.MSELoss | None = None,
@@ -118,13 +107,11 @@ def compute_multitask_loss(
         poisson_fn = nn.PoissonNLLLoss(log_input=False, full=False)
 
     vae_kld = kl_divergence(mu, logvar)
-    attn_entropy = attention_entropy_loss(attn_weights)
     atom_bd = atom_count_loss(pred_n, true_n, mse_fn=mse_fn, poisson_fn=poisson_fn)
     lat_bd = lattice_loss(pred_L, true_L, mse_fn=mse_fn)
 
     total = (
         w_vae * vae_kld
-        + w_attn * attn_entropy
         + w_atom * atom_bd.total
         + w_lattice * lat_bd.mse
     )
@@ -132,7 +119,6 @@ def compute_multitask_loss(
     return LossBreakdown(
         total=total,
         vae_kld=vae_kld,
-        attn_entropy=attn_entropy,
         atom_mse=atom_bd.mse,
         atom_poisson=atom_bd.poisson,
         atom_total=atom_bd.total,
@@ -209,7 +195,6 @@ def iter_samples(
 class EpochMetrics:
     total: float = 0.0
     vae_kld: float = 0.0
-    attn_entropy: float = 0.0
     atom_total: float = 0.0
     lattice_mse: float = 0.0
     n_samples: int = 0
@@ -218,7 +203,6 @@ class EpochMetrics:
         d = breakdown.as_dict()
         self.total += d["total"]
         self.vae_kld += d["vae_kld"]
-        self.attn_entropy += d["attn_entropy"]
         self.atom_total += d["atom_total"]
         self.lattice_mse += d["lattice_mse"]
         self.n_samples += 1
@@ -228,7 +212,6 @@ class EpochMetrics:
         return {
             "total": self.total / n,
             "vae_kld": self.vae_kld / n,
-            "attn_entropy": self.attn_entropy / n,
             "atom_total": self.atom_total / n,
             "lattice_mse": self.lattice_mse / n,
         }
@@ -273,7 +256,7 @@ def run_epoch(
             if train and optimizer is not None:
                 optimizer.zero_grad(set_to_none=True)
 
-            z, mu, logvar, attn = compressor(atom_matrix)
+            z, mu, logvar, _attn = compressor(atom_matrix)
             z_vec = z.squeeze(0)
             pred_n = atom_decoder(z_vec)
             pred_l = lattice_decoder(z_vec)
@@ -285,7 +268,6 @@ def run_epoch(
                 true_l,
                 mu,
                 logvar,
-                attn,
                 mse_fn=mse_fn,
                 poisson_fn=poisson_fn,
             )
@@ -479,7 +461,7 @@ def train_pipeline(args: argparse.Namespace) -> dict[str, Any]:
     print("=== VAE-Attention-Atom-Predictor pipeline ===")
     print(f"device: {device}  epochs: {args.epochs}  lr: {args.lr}")
     print(
-        f"loss weights: w_vae={W_VAE}  w_attn={W_ATTN}  w_atom={W_ATOM}  w_lattice={W_LATTICE}"
+        f"loss weights: w_vae={W_VAE}  w_atom={W_ATOM}  w_lattice={W_LATTICE}"
     )
 
     data_source = "synthetic" if args.synthetic else "uma"
@@ -628,7 +610,6 @@ def train_pipeline(args: argparse.Namespace) -> dict[str, Any]:
         "val_frac": VAL_FRAC,
         "loss_weights": {
             "w_vae": W_VAE,
-            "w_attn": W_ATTN,
             "w_atom": W_ATOM,
             "w_lattice": W_LATTICE,
         },
