@@ -4,13 +4,15 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
   <meta name="theme-color" content="#0f172a" />
+  <meta name="mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
   <meta name="apple-mobile-web-app-title" content="Maternal Health App" />
-  <link rel="manifest" href="manifest.json" />
-  <link rel="apple-touch-icon" href="assets/icon-180.png" />
-  <link rel="icon" type="image/png" sizes="32x32" href="assets/icon-32.png" />
-  <link rel="icon" type="image/png" sizes="16x16" href="assets/icon-16.png" />
+  <link rel="manifest" href="./manifest.json">
+  <link rel="icon" type="image/svg+xml" href="./assets/icon.svg" />
+  <link rel="apple-touch-icon" href="./assets/icon-180.png" />
+  <link rel="icon" type="image/png" sizes="32x32" href="./assets/icon-32.png" />
+  <link rel="icon" type="image/png" sizes="16x16" href="./assets/icon-16.png" />
   <title>Maternal Health App — Ms. Rajni Singh Care Tracker</title>
   <style>
     :root {
@@ -114,7 +116,7 @@
 <header>
   <div class="header-top">
     <div class="brand-row">
-      <img src="assets/icon-192.png" alt="Maa Care Icon" class="brand-avatar" />
+      <img src="./assets/icon.svg" alt="Maa Care Icon" class="brand-avatar" />
       <div>
         <h1>Ms. Rajni Singh (54F) — Maternal Health App</h1>
         <div class="subtitle">Diabetes, Kidney Stone Protection, Prohance HP & Lab Report Tracker</div>
@@ -126,10 +128,11 @@
 
 <div class="container">
 
-  <!-- PWA CAMERA & NOTIFICATION CONTROLS BAR -->
+  <!-- PWA INSTALL, CAMERA & NOTIFICATION CONTROLS BAR -->
   <div class="card">
-    <div class="card-title"><span>PWA Camera Scanner & Care Notifications</span></div>
+    <div class="card-title"><span>Install App, Camera Scanner & Care Notifications</span></div>
     <div class="btn-row">
+      <button type="button" class="success" id="installPwaBtn" style="display:none;">Install App on Phone</button>
       <button type="button" class="primary" id="openCameraBtn">Open Camera</button>
       <button type="button" class="success" id="capturePhotoBtn" style="display:none;">Capture Report Photo</button>
       <button type="button" class="primary" id="enableNotificationsBtn">Enable Notifications</button>
@@ -139,7 +142,8 @@
       <video id="webcam" autoplay playsinline></video>
       <canvas id="capturedCanvas" style="display:none;"></canvas>
     </div>
-    <div class="stat-sub" id="cameraStatus" style="margin-top:6px;"></div>
+    <div class="stat-sub" id="pwaInstallStatus" style="margin-top:6px;"></div>
+    <div class="stat-sub" id="cameraStatus" style="margin-top:4px;"></div>
     <div class="stat-sub" id="notificationStatus" style="margin-top:2px;"></div>
     <div id="capturedGallery" class="grid-2" style="margin-top:10px;margin-bottom:0;"></div>
   </div>
@@ -337,17 +341,17 @@
   <label for="rad-grocery" class="nav-label"><span>5. Groceries</span></label>
 </nav>
 
-<script src="app.js"></script>
+<script src="./app.js"></script>
 <script>
   if ("serviceWorker" in navigator) {
     window.addEventListener("load", function () {
       navigator.serviceWorker
-        .register("service-worker.js")
+        .register("./service-worker.js", { scope: "./" })
         .then(function (registration) {
-          console.log("Service Worker registered with scope:", registration.scope);
+          console.log("Service Worker Registered Successfully", registration.scope);
         })
         .catch(function (error) {
-          console.warn("Service Worker registration failed:", error);
+          console.error("Service Worker Registration Error:", error);
         });
     });
   }

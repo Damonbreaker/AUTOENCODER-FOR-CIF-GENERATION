@@ -35,6 +35,47 @@
   }
 
   // -------------------------------------------------------------------------
+  // 1B. Native PWA Install Prompt Handler (beforeinstallprompt)
+  // -------------------------------------------------------------------------
+  var deferredInstallPrompt = null;
+  var installPwaBtn = document.getElementById("installPwaBtn");
+  var pwaInstallStatus = document.getElementById("pwaInstallStatus");
+
+  window.addEventListener("beforeinstallprompt", function (e) {
+    e.preventDefault();
+    deferredInstallPrompt = e;
+    if (installPwaBtn) {
+      installPwaBtn.style.display = "inline-block";
+    }
+    if (pwaInstallStatus) {
+      pwaInstallStatus.textContent =
+        "App is ready to install! Tap 'Install App on Phone' above.";
+    }
+  });
+
+  if (installPwaBtn) {
+    installPwaBtn.addEventListener("click", async function () {
+      if (!deferredInstallPrompt) return;
+      deferredInstallPrompt.prompt();
+      var choiceResult = await deferredInstallPrompt.userChoice;
+      if (choiceResult && choiceResult.outcome === "accepted") {
+        installPwaBtn.style.display = "none";
+        if (pwaInstallStatus) {
+          pwaInstallStatus.textContent = "App installed on your phone!";
+        }
+      }
+      deferredInstallPrompt = null;
+    });
+  }
+
+  window.addEventListener("appinstalled", function () {
+    if (installPwaBtn) installPwaBtn.style.display = "none";
+    if (pwaInstallStatus) {
+      pwaInstallStatus.textContent = "Maternal Health App installed!";
+    }
+  });
+
+  // -------------------------------------------------------------------------
   // 2. Camera Access via navigator.mediaDevices.getUserMedia
   // -------------------------------------------------------------------------
   var activeStream = null;

@@ -1,9 +1,10 @@
-const CACHE_NAME = "maternal-health-pwa-v1";
+const CACHE_NAME = "maternal-health-pwa-v2";
 const ASSETS_TO_CACHE = [
   "./",
   "./index.html",
   "./app.js",
   "./manifest.json",
+  "./assets/icon.svg",
   "./assets/icon-16.png",
   "./assets/icon-32.png",
   "./assets/icon-72.png",
@@ -17,40 +18,48 @@ const ASSETS_TO_CACHE = [
   "./assets/icon-512.png"
 ];
 
-// Install event: pre-cache essential HTML, CSS, JS, and icon assets for offline use
+// Install event: fault-tolerant pre-caching so one missing asset never breaks installation
 self.addEventListener("install", (event) => {
-  event.waitUntil(
-    caches.open(CACHE_NAME).then((cache) => {
-      return cache.addAll(ASSETS_TO_CACHE);
-    })
-  );
   self.skipWaiting();
-});
-
-// Activate event: clean up old caches
-self.addEventListener("activate", (event) => {
   event.waitUntil(
-    caches.keys().then((cacheNames) => {
-      return Promise.all(
-        cacheNames
-          .filter((name) => name !== CACHE_NAME)
-          .map((name) => caches.delete(name))
+    caches.open(CACHE_NAME).then(async (cache) => {
+      await Promise.allSettled(
+        ASSETS_TO_CACHE.map((url) =>
+          cache.add(url).catch((err) => {
+            console.warn("Non-fatal cache skip for:", url, err);
+          })
+        )
       );
     })
   );
-  self.clients.claim();
 });
 
-// Fetch event: serve cached content when offline, with network update fallback
+// Activate event: clean up old caches and claim clients immediately
+self.addEventListener("activate", (event) => {
+  event.waitUntil(
+    caches
+      .keys()
+      .then((cacheNames) =>
+        Promise.all(
+          cacheNames
+            .filter((name) => name !== CACHE_NAME)
+            .map((name) => caches.delete(name))
+        )
+      )
+      .then(() => self.clients.claim())
+  );
+});
+
+// Complete fetch event listener (Required by Chrome for PWA installability)
 self.addEventListener("fetch", (event) => {
   if (event.request.method !== "GET") return;
 
+  const requestUrl = new URL(event.request.url);
+  if (requestUrl.origin !== self.location.origin) return;
+
   event.respondWith(
     caches.match(event.request).then((cachedResponse) => {
-      if (cachedResponse) {
-        return cachedResponse;
-      }
-      return fetch(event.request)
+      const networkFetch = fetch(event.request)
         .then((networkResponse) => {
           if (
             networkResponse &&
@@ -68,7 +77,10 @@ self.addEventListener("fetch", (event) => {
           if (event.request.mode === "navigate") {
             return caches.match("./index.html");
           }
+          return cachedResponse;
         });
+
+      return cachedResponse || networkFetch;
     })
   );
 });
@@ -110,15 +122,19 @@ self.addEventListener("push", (event) => {
 self.addEventListener("notificationclick", (event) => {
   event.notification.close();
   event.waitUntil(
-    clients.matchAll({ type: "window", includeUncontrolled: true }).then((windowClients) => {
-      for (const client of windowClients) {
-        if ("focus" in client) {
-          return client.focus();
+    clients
+      .matchAll({ type: "window", includeUncontrolled: true })
+      .then((windowClients) => {
+        for (const client of windowClients) {
+          if ("focus" in client) {
+            return client.focus();
+          }
         }
-      }
-      if (clients.openWindow) {
-        return clients.openWindow(event.notification.data?.url || "./index.html");
-      }
-    })
+        if (clients.openWindow) {
+          return clients.openWindow(
+            event.notification.data?.url || "./index.html"
+          );
+        }
+      })
   );
 });
