@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <meta name="theme-color" content="#0f172a" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-title" content="Maternal Health App" />
+  <link rel="manifest" href="manifest.json" />
+  <link rel="apple-touch-icon" href="assets/icon-180.png" />
+  <link rel="icon" type="image/png" sizes="32x32" href="assets/icon-32.png" />
+  <link rel="icon" type="image/png" sizes="16x16" href="assets/icon-16.png" />
+  <title>Maternal Health App — Ms. Rajni Singh Care Tracker</title>
+  <style>
+    :root {
+      --bg: #0f172a; --surface: #1e293b; --surface2: #334155; --border: #334155;
+      --text: #f8fafc; --muted: #94a3b8; --primary: #38bdf8; --primary-dark: #0284c7;
+      --success: #22c55e; --success-bg: rgba(34, 197, 94, 0.14);
+      --warn: #f59e0b; --warn-bg: rgba(245, 158, 11, 0.14);
+      --danger: #ef4444; --danger-bg: rgba(239, 68, 68, 0.14);
+      --info-bg: rgba(56, 189, 248, 0.14); --radius: 14px;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+    body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: var(--bg); color: var(--text); line-height: 1.5; padding-bottom: 90px; }
+    header { background: var(--surface); border-bottom: 1px solid var(--border); padding: 12px 16px; position: sticky; top: 0; z-index: 50; }
+    .header-top { display: flex; justify-content: space-between; align-items: center; gap: 10px; flex-wrap: wrap; }
+    .brand-row { display: flex; align-items: center; gap: 10px; }
+    .brand-avatar { width: 42px; height: 42px; border-radius: 10px; object-fit: cover; border: 1.5px solid var(--primary); }
+    h1 { font-size: 1.05rem; font-weight: 700; }
+    .badge { background: var(--info-bg); color: var(--primary); border: 1px solid rgba(56, 189, 248, 0.35); padding: 3px 10px; border-radius: 999px; font-size: 0.74rem; font-weight: 600; }
+    .subtitle { font-size: 0.75rem; color: var(--muted); }
+    .container { max-width: 900px; margin: 0 auto; padding: 12px; }
+
+    /* Pure CSS Tab Switching */
+    input.tab-radio { display: none; }
+    .tab-panel { display: none; }
+    #rad-daily:checked ~ .container #tab-daily,
+    #rad-reports:checked ~ .container #tab-reports,
+    #rad-schedule:checked ~ .container #tab-schedule,
+    #rad-diet:checked ~ .container #tab-diet,
+    #rad-grocery:checked ~ .container #tab-grocery {
+      display: block;
+    }
+    .bottom-nav { position: fixed; bottom: 0; left: 0; right: 0; background: var(--surface); border-top: 1px solid var(--border); display: grid; grid-template-columns: repeat(5, 1fr); z-index: 100; padding: 6px 4px 10px; }
+    .nav-label { background: transparent; border: none; color: var(--muted); display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px; font-size: 0.68rem; padding: 7px 2px; border-radius: 8px; cursor: pointer; text-align: center; user-select: none; }
+    #rad-daily:checked ~ .bottom-nav label[for="rad-daily"],
+    #rad-reports:checked ~ .bottom-nav label[for="rad-reports"],
+    #rad-schedule:checked ~ .bottom-nav label[for="rad-schedule"],
+    #rad-diet:checked ~ .bottom-nav label[for="rad-diet"],
+    #rad-grocery:checked ~ .bottom-nav label[for="rad-grocery"] {
+      color: var(--primary); background: var(--info-bg); font-weight: 700;
+    }
+
+    .grid-2, .grid-4 { display: grid; gap: 10px; margin-bottom: 14px; }
+    .grid-2 { grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); }
+    .grid-4 { grid-template-columns: repeat(2, 1fr); }
+    .card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 13px; margin-bottom: 12px; }
+    .card-title { font-size: 0.74rem; text-transform: uppercase; color: var(--muted); margin-bottom: 5px; display: flex; justify-content: space-between; align-items: center; }
+    .stat-val { font-size: 1.22rem; font-weight: 700; }
+    .stat-sub { font-size: 0.72rem; color: var(--muted); }
+    .text-success { color: var(--success); } .text-warn { color: var(--warn); } .text-danger { color: var(--danger); } .text-primary { color: var(--primary); }
+    .btn-row { display: flex; gap: 8px; margin-top: 8px; flex-wrap: wrap; align-items: center; }
+    button, .btn { background: var(--surface2); color: var(--text); border: 1px solid var(--border); padding: 8px 12px; border-radius: 8px; font-size: 0.8rem; font-weight: 600; cursor: pointer; touch-action: manipulation; }
+    button.primary { background: var(--primary-dark); border-color: var(--primary); color: #fff; }
+    button.success { background: #15803d; border-color: var(--success); color: #fff; }
+    .callout { border-radius: var(--radius); padding: 11px 13px; margin-bottom: 10px; border-left: 4px solid var(--primary); background: var(--info-bg); }
+    .callout.warn { border-left-color: var(--warn); background: var(--warn-bg); }
+    .callout.danger { border-left-color: var(--danger); background: var(--danger-bg); }
+    .callout.success { border-left-color: var(--success); background: var(--success-bg); }
+    .callout-title { font-weight: 700; font-size: 0.87rem; margin-bottom: 3px; }
+    .callout-body { font-size: 0.8rem; color: #e2e8f0; }
+    .task-item { display: flex; align-items: flex-start; gap: 11px; padding: 12px; border-bottom: 1px solid var(--border); cursor: pointer; }
+    .task-item:last-child { border-bottom: none; }
+    .task-check { width: 22px; height: 22px; margin-top: 2px; accent-color: var(--success); flex-shrink: 0; cursor: pointer; }
+    .task-check:checked + .task-content { opacity: 0.5; }
+    .task-check:checked + .task-content .task-title { text-decoration: line-through; }
+    .task-content { flex: 1; }
+    .task-meta { display: flex; gap: 7px; align-items: center; margin-bottom: 2px; flex-wrap: wrap; }
+    .task-time { font-size: 0.76rem; font-weight: 700; color: var(--primary); }
+    .task-tag { font-size: 0.66rem; padding: 1px 6px; border-radius: 5px; background: var(--surface2); color: var(--muted); }
+    .task-title { font-weight: 600; font-size: 0.88rem; }
+    .task-desc { font-size: 0.78rem; color: var(--muted); }
+    select, input[type="text"], input[type="number"], input[type="date"] { width: 100%; background: var(--bg); color: var(--text); border: 1px solid var(--border); border-radius: 8px; padding: 8px 10px; font-size: 0.85rem; margin-top: 4px; }
+    label.field-lbl { font-size: 0.75rem; font-weight: 600; color: var(--muted); display: block; margin-top: 7px; }
+    .section-title { font-size: 0.96rem; font-weight: 700; margin: 12px 0 8px; }
+    .table-wrap { overflow-x: auto; }
+    table { width: 100%; border-collapse: collapse; font-size: 0.8rem; }
+    th, td { padding: 9px; text-align: left; border-bottom: 1px solid var(--border); vertical-align: top; }
+    th { color: var(--muted); font-size: 0.72rem; text-transform: uppercase; }
+    details.card { padding: 0; overflow: hidden; }
+    details.card summary { padding: 12px 14px; font-weight: 700; font-size: 0.86rem; cursor: pointer; background: var(--surface2); color: var(--primary); list-style: none; }
+    details.card .details-body { padding: 13px; }
+    #webcam {
+      width: 100%;
+      max-height: 320px;
+      background: #000;
+      border-radius: 10px;
+      margin-top: 10px;
+      display: none;
+      object-fit: cover;
+    }
+  </style>
+</head>
+<body>
+
+<!-- Pure CSS Radio Inputs for Bottom Navigation Tabs -->
+<input type="radio" name="main-tab" id="rad-daily" class="tab-radio" checked />
+<input type="radio" name="main-tab" id="rad-reports" class="tab-radio" />
+<input type="radio" name="main-tab" id="rad-schedule" class="tab-radio" />
+<input type="radio" name="main-tab" id="rad-diet" class="tab-radio" />
+<input type="radio" name="main-tab" id="rad-grocery" class="tab-radio" />
+
+<header>
+  <div class="header-top">
+    <div class="brand-row">
+      <img src="assets/icon-192.png" alt="Maa Care Icon" class="brand-avatar" />
+      <div>
+        <h1>Ms. Rajni Singh (54F) — Maternal Health App</h1>
+        <div class="subtitle">Diabetes, Kidney Stone Protection, Prohance HP & Lab Report Tracker</div>
+      </div>
+    </div>
+    <span class="badge" id="headerProgressBadge">Today: 0/12 Done</span>
+  </div>
+</header>
+
+<div class="container">
+
+  <!-- PWA CAMERA & NOTIFICATION CONTROLS BAR -->
+  <div class="card">
+    <div class="card-title"><span>PWA Camera Scanner & Care Notifications</span></div>
+    <div class="btn-row">
+      <button type="button" class="primary" id="openCameraBtn">Open Camera</button>
+      <button type="button" class="success" id="capturePhotoBtn" style="display:none;">Capture Report Photo</button>
+      <button type="button" class="primary" id="enableNotificationsBtn">Enable Notifications</button>
+      <button type="button" id="testNotificationBtn" style="display:none;">Send Reminder Alert</button>
+    </div>
+    <div class="camera-container">
+      <video id="webcam" autoplay playsinline></video>
+      <canvas id="capturedCanvas" style="display:none;"></canvas>
+    </div>
+    <div class="stat-sub" id="cameraStatus" style="margin-top:6px;"></div>
+    <div class="stat-sub" id="notificationStatus" style="margin-top:2px;"></div>
+    <div id="capturedGallery" class="grid-2" style="margin-top:10px;margin-bottom:0;"></div>
+  </div>
+
+  <!-- TAB 1: DAILY CHECKLIST -->
+  <section id="tab-daily" class="tab-panel">
+    <div class="grid-4">
+      <div class="card">
+        <div class="card-title"><span>Daily Tasks</span></div>
+        <div class="stat-val text-primary" id="statTasks">0 / 12</div>
+        <div class="stat-sub">Tap checkboxes below</div>
+      </div>
+      <div class="card">
+        <div class="card-title"><span>Water (Stone Shield)</span></div>
+        <div class="stat-val text-success" id="statWater">6 (1.50 L)</div>
+        <div class="stat-sub">Goal: 10-12 glasses</div>
+        <div class="btn-row">
+          <button type="button" class="primary" id="btnWaterPlus">+1</button>
+          <button type="button" id="btnWaterMinus">-1</button>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-title"><span>Lemon Water</span></div>
+        <div class="stat-val text-warn" id="statLemon">1 / 2</div>
+        <div class="stat-sub">Citrate dissolves crystals</div>
+        <div class="btn-row">
+          <button type="button" class="primary" id="btnLemonPlus">+1</button>
+          <button type="button" id="btnLemonMinus">-1</button>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-title"><span>Sun Vit D3 60k</span></div>
+        <div class="stat-val text-primary" id="statVitD">3 / 8</div>
+        <div class="stat-sub" id="statVitDSub">Cap at 8 doses</div>
+        <div class="btn-row">
+          <button type="button" id="btnVitDPlus">+1</button>
+          <button type="button" id="btnVitDMinus">-1</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">
+        <span>Today's Menu (Select Day)</span>
+        <button type="button" id="btnResetDay" style="padding:4px 9px;font-size:0.72rem;">Reset Today</button>
+      </div>
+      <select id="daySelect">
+        <option value="0">Monday (सोमवार)</option>
+        <option value="1">Tuesday (मंगलवार)</option>
+        <option value="2">Wednesday (बुधवार)</option>
+        <option value="3">Thursday (गुरुवार)</option>
+        <option value="4">Friday (शुक्रवार)</option>
+        <option value="5">Saturday (शनिवार)</option>
+        <option value="6">Sunday (रविवार)</option>
+      </select>
+      <div id="todayMenuBox" style="margin-top:10px;display:grid;gap:8px;font-size:0.82rem;">
+        <div><strong style="color:var(--primary);">Breakfast (8:30 AM):</strong> 2 Oats Idli OR Veggie Idli + Sambar/Chutney + 1 glass Chaas/Dahi</div>
+        <div><strong style="color:var(--success);">Lunch (1:30 PM):</strong> 2 katori Karela Sabzi + 2 Bran/Multigrain Rotis + 1 katori Dal + Chaas/Dahi + Salad (deseed tomatoes)</div>
+        <div><strong style="color:var(--warn);">Dinner (7:30 PM) & Bedtime:</strong> 2 Moong Dal Chillas + 1 katori Raita (Avoid Sabudana) + 1.5 scoops Prohance HP at 9:30 PM</div>
+      </div>
+    </div>
+
+    <div class="section-title">Step-by-Step Daily Checklist (6:45 AM – 9:30 PM)</div>
+    <div class="card" style="padding:0;" id="dailyTasksList">
+      <label class="task-item"><input type="checkbox" class="task-check" data-task="dt1" /><div class="task-content"><div class="task-meta"><span class="task-time">6:45 AM</span><span class="task-tag">Medicine</span></div><div class="task-title">Warm Methi Water + Rapeed D (1 Cap)</div><div class="task-desc">1 glass warm water + 1 tsp overnight-soaked Methi seeds + 1 Cap Rapeed D empty stomach (30-45m before breakfast).</div></div></label>
+      <label class="task-item"><input type="checkbox" class="task-check" data-task="dt2" /><div class="task-content"><div class="task-meta"><span class="task-time">7:15 AM</span><span class="task-tag">Walk & Nuts</span></div><div class="task-title">30-35 Min Brisk Walk + Peeled Almonds & Walnuts</div><div class="task-desc">4-5 soaked & peeled Almonds (peeling removes oxalates) + 2-3 soaked Walnuts. Carry sugar packet in pocket.</div></div></label>
+      <label class="task-item"><input type="checkbox" class="task-check" data-task="dt3" /><div class="task-content"><div class="task-meta"><span class="task-time">8:00 AM</span><span class="task-tag">Testing</span></div><div class="task-title">Fasting Sugar Check (Mon / Wed / Sat)</div><div class="task-desc">Check glucometer 3 days/week and log in Tab 2 (Reports/AI).</div></div></label>
+      <label class="task-item"><input type="checkbox" class="task-check" data-task="dt4" /><div class="task-content"><div class="task-meta"><span class="task-time">8:30 AM</span><span class="task-tag">Protein</span></div><div class="task-title">Breakfast + 1 Scoop Prohance HP</div><div class="task-desc">Follow today's breakfast menu + 1 level scoop (~18g) Prohance HP in 120mL lukewarm water/skimmed milk.</div></div></label>
+      <label class="task-item"><input type="checkbox" class="task-check" data-task="dt5" /><div class="task-content"><div class="task-meta"><span class="task-time">8:45 AM</span><span class="task-tag">Medicine</span></div><div class="task-title">Glynamic MP 2 (1 Tab) + Ondero 5 (1 Tab)</div><div class="task-desc">Take immediately after breakfast. Never skip breakfast or 11:15 AM fruit.</div></div></label>
+      <label class="task-item"><input type="checkbox" class="task-check" data-task="dt6" /><div class="task-content"><div class="task-meta"><span class="task-time">11:15 AM</span><span class="task-tag">Stone Shield</span></div><div class="task-title">Mid-Day Whole Fruit + Lemon Water #1</div><div class="task-desc">100-150g Guava/Apple/Papaya/Pear/Orange + 1 glass unsweetened Lemon Water or Coconut Water.</div></div></label>
+      <label class="task-item"><input type="checkbox" class="task-check" data-task="dt7" /><div class="task-content"><div class="task-meta"><span class="task-time">1:30 PM</span><span class="task-tag">Meal</span></div><div class="task-title">Lunch (Eat Raw Salad First!)</div><div class="task-desc">1 bowl cucumber/radish salad first, then 2 bowls sabzi + 1 bowl dal + 2 rotis + chaas. (Sundays: Take Vit D3 60k syrup right after lunch).</div></div></label>
+      <label class="task-item"><input type="checkbox" class="task-check" data-task="dt8" /><div class="task-content"><div class="task-meta"><span class="task-time">3:15 PM</span><span class="task-tag">Stone Shield</span></div><div class="task-title">Afternoon Lemon Water #2</div><div class="task-desc">2nd glass of unsweetened Lemon Water (citrate stops kidney stone crystals).</div></div></label>
+      <label class="task-item"><input type="checkbox" class="task-check" data-task="dt9" /><div class="task-content"><div class="task-meta"><span class="task-time">4:30 PM</span><span class="task-tag">Snack</span></div><div class="task-title">Unsweetened Tea + Sattu / Paneer / Chana + Seeds</div><div class="task-desc">2 tbsp Chana Sattu drink OR 50g Paneer Bhuna / Roasted Chana / Makhana + 1 tbsp ground Alsi (Flax) & seed mix.</div></div></label>
+      <label class="task-item"><input type="checkbox" class="task-check" data-task="dt10" /><div class="task-content"><div class="task-meta"><span class="task-time">7:30 PM</span><span class="task-tag">Meal</span></div><div class="task-title">Early Light Dinner + 15 Min Stroll</div><div class="task-desc">Finish dinner by 7:30-8:00 PM followed by a 15-min gentle walk.</div></div></label>
+      <label class="task-item"><input type="checkbox" class="task-check" data-task="dt11" /><div class="task-content"><div class="task-meta"><span class="task-time">7:45 PM</span><span class="task-tag">Medicine</span></div><div class="task-title">Obimet GX 2 (1 Tablet)</div><div class="task-desc">Take immediately after dinner to control night & morning fasting sugar.</div></div></label>
+      <label class="task-item"><input type="checkbox" class="task-check" data-task="dt12" /><div class="task-content"><div class="task-meta"><span class="task-time">9:30 PM</span><span class="task-tag">Protein</span></div><div class="task-title">Bedtime Prohance HP (1 to 1.5 Scoops)</div><div class="task-desc">Mix in 150mL lukewarm water/skimmed milk. Prevents overnight liver glucose surge & night hypoglycemia.</div></div></label>
+    </div>
+  </section>
+
+  <!-- TAB 2: REPORTS & SMART JUDGEMENT -->
+  <section id="tab-reports" class="tab-panel">
+    <details class="card">
+      <summary>+ Tap Here to Log New Sugar Reading or Lab Report</summary>
+      <div class="details-body">
+        <div class="grid-2">
+          <div>
+            <label class="field-lbl">Date</label><input type="date" id="inpDate" value="2026-10-26" />
+            <label class="field-lbl">Label</label><input type="text" id="inpLabel" placeholder="Home Check / Nov 8 Lab Report" />
+            <label class="field-lbl">Fasting Sugar (mg/dL)</label><input type="number" id="inpFasting" placeholder="210" />
+            <label class="field-lbl">Post-Meal (PP) Sugar (mg/dL)</label><input type="number" id="inpPP" placeholder="235" />
+            <label class="field-lbl">HbA1c (%)</label><input type="number" step="0.1" id="inpHba1c" placeholder="12.0" />
+          </div>
+          <div>
+            <label class="field-lbl">Triglycerides (mg/dL)</label><input type="number" id="inpTG" placeholder="232" />
+            <label class="field-lbl">Creatinine & eGFR</label><div style="display:flex;gap:6px;"><input type="number" step="0.01" id="inpCreat" placeholder="0.61" /><input type="number" id="inpEgfr" placeholder="106" /></div>
+            <label class="field-lbl">Vitamin D (nmol/L) & Calcium (mg/dL)</label><div style="display:flex;gap:6px;"><input type="number" step="0.1" id="inpVitD" placeholder="48" /><input type="number" step="0.1" id="inpCalc" placeholder="9.29" /></div>
+            <label class="field-lbl">Urine Yeast & Crystals (/hpf)</label><div style="display:flex;gap:6px;"><input type="number" step="0.1" id="inpYeast" placeholder="0.0" /><input type="number" step="0.1" id="inpCrystals" placeholder="0.0" /></div>
+            <label class="field-lbl">Notes</label><input type="text" id="inpNotes" placeholder="Symptoms or doctor notes..." />
+          </div>
+        </div>
+        <div class="btn-row">
+          <button type="button" class="success" id="btnSaveReport">Save & Recalculate Guidance</button>
+        </div>
+      </div>
+    </details>
+
+    <div class="section-title">Live Automated Clinical Judgement</div>
+    <div id="dynamicAdviceContainer">
+      <div class="callout warn"><div class="callout-title">Active Sugar Reduction (Fasting: 225 | PP: 254 mg/dL)</div><div class="callout-body">PP sugar dropped by 205 mg/dL (from 459.3 to 254), but remains above the 180 mg/dL kidney threshold. Continue Glynamic MP2 + Ondero 5 after breakfast, Obimet GX2 after 7:30 PM dinner, and 1.5 scoops Prohance HP at 9:30 PM.</div></div>
+      <div class="callout warn"><div class="callout-title">Urine Yeast & Stone Crystal Shield Active</div><div class="callout-body">Drink 2.5-3.0L water + 2 glasses unsweetened Lemon Water daily (citrate dissolves Calcium Oxalate crystals). Repeat Urine R/E around Nov 8-10.</div></div>
+      <div class="callout"><div class="callout-title">Vitamin D3 60k Weekly Course (3/8 Done — 5 Left)</div><div class="callout-body">Give 1 Sugar-Free 60k IU bottle every Sunday immediately AFTER Lunch. Cap at 8 doses total due to past kidney stone surgery.</div></div>
+      <div class="callout success"><div class="callout-title">Kidneys Healthy (Creatinine 0.61 | eGFR 106) — Safe for 2 Scoops Prohance HP/Day</div><div class="callout-body">Normal kidney filtration. Continue 1 scoop Prohance HP at Breakfast + 1-1.5 scoops at 9:30 PM Bedtime.</div></div>
+    </div>
+
+    <div class="section-title">Report History</div>
+    <div class="card table-wrap" style="padding:0;">
+      <table id="reportsTable">
+        <thead><tr><th>Date</th><th>Fasting/PP</th><th>HbA1c/TG</th><th>Kidney/VitD</th><th>Urine</th></tr></thead>
+        <tbody>
+          <tr><td><strong>2026-10-25</strong><br/>3-Wk Check + Itra 200</td><td><strong>225 / 254</strong></td><td>12.0% | TG:232</td><td>Cr:0.61 | VitD:48</td><td>Y:5.0 C:1.0</td></tr>
+          <tr><td><strong>2026-10-04</strong><br/>Baseline Lal PathLabs</td><td><strong>230.9 / 459.3</strong></td><td>12.0% | TG:232</td><td>Cr:0.61 | VitD:36.7</td><td>Y:36.6 C:1.5</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- TAB 3: CHECKUP REMINDERS -->
+  <section id="tab-schedule" class="tab-panel">
+    <div class="section-title">12-Month Checkup & Lab Test Reminders</div>
+    <div class="card" style="padding:0;" id="checkupListContainer">
+      <label class="task-item"><input type="checkbox" class="task-check" data-chk="c1" /><div class="task-content"><div class="task-meta"><span class="task-time">Nov 8–10, 2026 (In 2 Weeks)</span></div><div class="task-title">Urine Infection & Crystal Clearance Check</div><div class="task-desc"><strong>Tests:</strong> Urine Routine & Microscopy (Urine R/E) + Fasting & PP Sugar.<br/>Confirms Yeast (36.6 /hpf), Bacteria (96 /hpf), and Oxalate crystals cleared after Itra 200.</div></div></label>
+      <label class="task-item"><input type="checkbox" class="task-check" data-chk="c2" /><div class="task-content"><div class="task-meta"><span class="task-time">Dec 6, 2026 (At 8 Weeks)</span></div><div class="task-title">Finish 8th Weekly Vitamin D3 60k Bottle & Stop Weekly Dosing</div><div class="task-desc"><strong>Rule:</strong> Cap weekly 60k IU syrup at 8 bottles total to prevent excess urinary calcium (kidney stone history).</div></div></label>
+      <label class="task-item"><input type="checkbox" class="task-check" data-chk="c3" /><div class="task-content"><div class="task-meta"><span class="task-time">Jan 6–10, 2027 (At 3 Months)</span></div><div class="task-title">Major 90-Day Diabetes, Lipid, Vit D & Stone Safety Review</div><div class="task-desc"><strong>Tests:</strong> HbA1c, Lipid Profile (TG/HDL/LDL), LFT (ALT/ALP), 25-(OH) Vit D, Serum Calcium, Creatinine, Uric Acid.</div></div></label>
+      <label class="task-item"><input type="checkbox" class="task-check" data-chk="c4" /><div class="task-content"><div class="task-meta"><span class="task-time">Feb / Mar 2027 (Annual)</span></div><div class="task-title">Ultrasound Whole Abdomen (KUB) & Retina Eye Check</div><div class="task-desc"><strong>Tests:</strong> USG Abdomen/Pelvis (KUB for silent stones + fatty liver) + Dilated Fundus Eye Exam.</div></div></label>
+      <label class="task-item"><input type="checkbox" class="task-check" data-chk="c5" /><div class="task-content"><div class="task-meta"><span class="task-time">Apr 6–10, 2027 (At 6 Months)</span></div><div class="task-title">6-Month HbA1c, Kidney & Urine Crystal Check</div><div class="task-desc"><strong>Tests:</strong> HbA1c, Fasting/PP Sugar, Urine R/E, Serum Creatinine & eGFR.</div></div></label>
+      <label class="task-item"><input type="checkbox" class="task-check" data-chk="c6" /><div class="task-content"><div class="task-meta"><span class="task-time">Oct 6, 2027 (At 12 Months)</span></div><div class="task-title">Annual Master Checkup + Vitamin B12 + Urine ACR</div><div class="task-desc"><strong>Tests:</strong> Swasthfit Super 4 + Vitamin B12 (annual check for Metformin) + Urine Microalbumin (ACR) + ECG.</div></div></label>
+    </div>
+  </section>
+
+  <!-- TAB 4: DIET & MEDICINES -->
+  <section id="tab-diet" class="tab-panel">
+    <div class="callout success">
+      <div class="callout-title">Prohance HP Protein Protocol (60–65g Protein/Day)</div>
+      <div class="callout-body">
+        • <strong>Scoop 1 (8:30 AM Breakfast):</strong> 1 level scoop (~18g) in 120 mL lukewarm water/skimmed milk.<br/>
+        • <strong>Scoop 2 (9:30 PM Bedtime):</strong> 1 to 1.5 level scoops (~20g) in 150 mL lukewarm water/skimmed milk.
+      </div>
+    </div>
+
+    <div class="section-title">7-Day Stone-Safe Vegetarian Diet Chart</div>
+    <div class="card table-wrap" style="padding:0;">
+      <table>
+        <thead><tr><th>Day</th><th>Breakfast (8-9 AM)</th><th>Lunch (1-2 PM)</th><th>Dinner (7-8 PM) + Bedtime</th></tr></thead>
+        <tbody>
+          <tr><td><strong>Mon (सोमवार)</strong></td><td>2 Oats Idli OR Veggie Idli + Sambar/Chutney + Chaas/Dahi</td><td>2 katori Karela Sabzi + 2 Bran/Multigrain Rotis + 1 katori Dal + Chaas + Salad</td><td>2 Moong Dal Chillas + 1 katori Raita (Avoid Sabudana) + 1.5 scoops Prohance HP at 9:30 PM</td></tr>
+          <tr><td><strong>Tue (मंगलवार)</strong></td><td>1 small bowl Veg Poha + Unsweetened Tea + Nuts + 1 scoop Prohance HP</td><td>2 katori Methi/Lauki Paneer (OR blanched & drained Palak Paneer) + 2 Bran Rotis + Dal + Salad</td><td>2 Large Idlis + Sambar OR Veg Upma + Chaas + 1 scoop Prohance HP at 9:30 PM</td></tr>
+          <tr><td><strong>Wed (बुधवार)</strong></td><td>1-2 Moong Dal or Besan Chilla stuffed with 50g Low-Fat Paneer + Chutney</td><td>2 katori Lauki Sabzi + 2 Rotis + 1 katori Dal + Salad</td><td>1 bowl Veg Tahri / Brown Rice Pulao (double veggies & soya) + Clear Veg Soup + 1.5 scoops Prohance HP</td></tr>
+          <tr><td><strong>Thu (गुरुवार)</strong></td><td>1 small bowl Veg Upma + Handful Nuts & Seeds + 1 scoop Prohance HP</td><td>1 katori Mix Veg + 1 katori Methi/Lauki Dal + 2 Multigrain Rotis + Salad</td><td>1 bowl Roasted Wheat/Ragi Vermicelli + Raita + 50g Roasted Paneer + Broccoli + 1 scoop Prohance HP</td></tr>
+          <tr><td><strong>Fri (शुक्रवार)</strong></td><td>1 bowl Steamed Sprouts (Green Moong, Soybean, Kala Chana) + 1 scoop Prohance HP</td><td>2 katori Rajma / Soybean / Kala Chana Sabzi + 1 Multigrain Roti + 1 small katori Red/Brown Rice + Salad</td><td>1 katori Thick Dal + 1 Multigrain Roti + Salad + 1.5 scoops Prohance HP at 9:30 PM</td></tr>
+          <tr><td><strong>Sat (शनिवार)</strong></td><td>1 bowl Veg Daliya Khichdi OR Skimmed Milk + Daliya/Oats + 1 scoop Prohance HP</td><td>2 katori Taroee / Munga (Drumstick) Sabzi (Avoid excess Bhindi) + 2 Rotis + Dahi + Salad</td><td>1 large bowl Skimmed Milk + Oats OR Milk Daliya (Unsweetened + 1.5 scoops Prohance HP)</td></tr>
+          <tr><td><strong>Sun (रविवार)</strong></td><td>1 Dal/Oats Dosa + Sambar OR 2 katori Sabzi + 1 Roti + Dahi</td><td>2 katori Beans (Rajma/Sem/Lobia/Gwar Phali) Sabzi + 2 Rotis + Salad + Chaas + Weekly Vit D3 60k Syrup</td><td>1 large bowl Moong Dal Veg Khichdi + Dahi + 1 scoop Prohance HP at 9:30 PM</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- TAB 5: GROCERIES -->
+  <section id="tab-grocery" class="tab-panel">
+    <div class="section-title">1-Month Grocery Checklist (Tap to Check Off)</div>
+    <div class="card" style="padding:0;" id="groceryListContainer">
+      <label class="task-item"><input type="checkbox" class="task-check" data-groc="g1" /><div class="task-content"><div class="task-meta"><span class="task-time">3 Tins (1.2 kg)</span><span class="task-tag">Supplements</span></div><div class="task-title">Prohance HP Powder (प्रोहेंस एचपी पाउडर)</div><div class="task-desc">2 scoops/day (~35-40g) for 60-65g protein target</div></div></label>
+      <label class="task-item"><input type="checkbox" class="task-check" data-groc="g28" /><div class="task-content"><div class="task-meta"><span class="task-time">5 More Bottles</span><span class="task-tag">Supplements</span></div><div class="task-title">Vitamin D3 60,000 IU Syrup Sugar-Free (विटामिन डी3 60k सिरप)</div><div class="task-desc">Take after Sunday lunch (cap at 8 weekly bottles total)</div></div></label>
+      <label class="task-item"><input type="checkbox" class="task-check" data-groc="g2" /><div class="task-content"><div class="task-meta"><span class="task-time">5 kg + 3 kg</span><span class="task-tag">Grains</span></div><div class="task-title">Wheat Flour with Bran (चोकर सहित आटा) + Multigrain/Ragi Flour</div><div class="task-desc">Daily high-fiber low-GI rotis</div></div></label>
+      <label class="task-item"><input type="checkbox" class="task-check" data-groc="g4" /><div class="task-content"><div class="task-meta"><span class="task-time">1.5 kg each</span><span class="task-tag">Grains</span></div><div class="task-title">Plain Rolled Oats (सादा ओट्स) & Broken Wheat (दलिया)</div><div class="task-desc">Oats idli & Saturday daliya</div></div></label>
+      <label class="task-item"><input type="checkbox" class="task-check" data-groc="g6" /><div class="task-content"><div class="task-meta"><span class="task-time">2 kg</span><span class="task-tag">Grains</span></div><div class="task-title">Red / Brown Rice or Broken Rice (लाल चावल / किनकी)</div><div class="task-desc">Controlled 1 small katori lunch portion</div></div></label>
+      <label class="task-item"><input type="checkbox" class="task-check" data-groc="g7" /><div class="task-content"><div class="task-meta"><span class="task-time">500 g each</span><span class="task-tag">Grains</span></div><div class="task-title">Thick Poha, Wheat/Ragi Vermicelli & Coarse Rava (पोहा, सेवई, सूजी)</div><div class="task-desc">Tue Poha & Thu Upma/Vermicelli</div></div></label>
+      <label class="task-item"><input type="checkbox" class="task-check" data-groc="g9" /><div class="task-content"><div class="task-meta"><span class="task-time">2 kg + 1 kg + 1.5 kg</span><span class="task-tag">Pulses</span></div><div class="task-title">Yellow/Green Moong Dal, Sabut Moong & Kala Chana (मूंग दाल, काला चना)</div><div class="task-desc">Chillas, Friday sprouts & Sunday khichdi</div></div></label>
+      <label class="task-item"><input type="checkbox" class="task-check" data-groc="g12" /><div class="task-content"><div class="task-meta"><span class="task-time">1 kg each</span><span class="task-tag">Pulses</span></div><div class="task-title">Besan & Roasted Chana Sattu (बेसन और चना सत्तू)</div><div class="task-desc">Wed Chilla & daily 4:30 PM Sattu drink</div></div></label>
+      <label class="task-item"><input type="checkbox" class="task-check" data-groc="g13" /><div class="task-content"><div class="task-meta"><span class="task-time">3 kg total</span><span class="task-tag">Pulses</span></div><div class="task-title">Toor Dal, Chana Dal, Rajma, Lobia, Soya Chunks (तूर, राजमा, लोबिया, सोया)</div><div class="task-desc">Daily lunch/dinner dals & beans</div></div></label>
+      <label class="task-item"><input type="checkbox" class="task-check" data-groc="g16" /><div class="task-content"><div class="task-meta"><span class="task-time">500 g + 400 g</span><span class="task-tag">Nuts & Seeds</span></div><div class="task-title">Almonds (बादाम) & Walnut Kernels (अखरोट गिरी)</div><div class="task-desc">Soak & peel 5 almonds + 3 walnuts every morning</div></div></label>
+      <label class="task-item"><input type="checkbox" class="task-check" data-groc="g18" /><div class="task-content"><div class="task-meta"><span class="task-time">250 g each</span><span class="task-tag">Nuts & Seeds</span></div><div class="task-title">Flaxseeds (अलसी), Chia, Pumpkin, Sunflower & Til Seeds</div><div class="task-desc">1 tbsp roasted ground Alsi daily lowers Triglycerides (232)</div></div></label>
+      <label class="task-item"><input type="checkbox" class="task-check" data-groc="g20" /><div class="task-content"><div class="task-meta"><span class="task-time">500 g each</span><span class="task-tag">Snacks</span></div><div class="task-title">Foxnuts (मखाना), Unsalted Bhuna Chana & Murmura</div><div class="task-desc">4:30 PM evening snacks</div></div></label>
+      <label class="task-item"><input type="checkbox" class="task-check" data-groc="g24" /><div class="task-content"><div class="task-meta"><span class="task-time">Weekly Fresh</span><span class="task-tag">Dairy & Veg</span></div><div class="task-title">Skimmed Milk (1L/day), Low-Fat Paneer, Low-GI Veg, Fruits & 15 Lemons/wk</div><div class="task-desc">2 lemons/day prevents kidney stones; avoid potato/raw palak</div></div></label>
+    </div>
+  </section>
+
+</div>
+
+<!-- Pure CSS Bottom Navigation Labels -->
+<nav class="bottom-nav">
+  <label for="rad-daily" class="nav-label"><span>1. Daily</span></label>
+  <label for="rad-reports" class="nav-label"><span>2. Reports/AI</span></label>
+  <label for="rad-schedule" class="nav-label"><span>3. Reminders</span></label>
+  <label for="rad-diet" class="nav-label"><span>4. Diet Chart</span></label>
+  <label for="rad-grocery" class="nav-label"><span>5. Groceries</span></label>
+</nav>
+
+<script src="app.js"></script>
+<script>
+  if ("serviceWorker" in navigator) {
+    window.addEventListener("load", function () {
+      navigator.serviceWorker
+        .register("service-worker.js")
+        .then(function (registration) {
+          console.log("Service Worker registered with scope:", registration.scope);
+        })
+        .catch(function (error) {
+          console.warn("Service Worker registration failed:", error);
+        });
+    });
+  }
+</script>
+</body>
+</html>
