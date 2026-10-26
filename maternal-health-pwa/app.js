@@ -292,52 +292,60 @@
   // -------------------------------------------------------------------------
   var WEEKLY_DIET = [
     {
-      bf: "2 Oats Idli OR Veggie Idli + Sambar/Chutney + 1 glass Chaas/Dahi",
-      lunch:
-        "2 katori Karela Sabzi + 2 Bran/Multigrain Rotis + 1 katori Dal + Chaas/Dahi + Salad (deseed tomatoes)",
-      dinner:
-        "2 Moong Dal Chillas + 1 katori Raita (Avoid Sabudana) + 1.5 scoops Prohance HP at 9:30 PM"
+      morning: "1 tsp soaked Methi Dana water + pinch of Cinnamon + Rapeed D -> 30-35m Walk -> 5 soaked & peeled Almonds + 3 soaked Walnuts",
+      bf: "2 Oats Idli (or Red Rice/Dal Idli) + Toor Dal Sambar (1 tsp oil) + Chaas (with 1 tsp roasted ground Alsi/Flaxseed) + 1 scoop Prohance HP",
+      midday: "150g Guava (अमरूद) + Lemon Water #1 with 1 tsp soaked Chia Seeds (20 mins soaked)",
+      lunch: "Salad First + 2 katori Karela Sabzi + 1 katori Yellow Moong Dal + 2 Chokar Wheat Rotis (with Ajwain) + 1 glass Chaas (1.5 tsp oil)",
+      snack: "Chana Sattu Drink (2 tbsp Sattu in Chaas/water) + 1 tbsp Roasted Pumpkin, Sunflower & White Til Seeds",
+      dinner: "2 Split Green Moong Dal Chillas (stuffed with grated Lauki & 30g Low-Fat Paneer) + Dahi Raita (with 1 tsp ground Alsi) -> 1.5 scoops Prohance HP in warm Skimmed Milk at 9:30 PM"
     },
     {
-      bf: "1 small bowl Vegetable Poha + Unsweetened Tea + Nuts + 1 scoop Prohance HP",
-      lunch:
-        "2 katori Methi/Lauki Paneer (OR blanched & drained Palak Paneer) + 2 Bran Rotis + 1 katori Dal + Salad",
-      dinner:
-        "2 Large Idlis + Sambar OR Veg Upma + Chaas + 1 scoop Prohance HP at 9:30 PM"
+      morning: "1 tsp soaked Methi Dana water + pinch of Cinnamon + Rapeed D -> 30-35m Walk -> 5 soaked & peeled Almonds + 3 soaked Walnuts",
+      bf: "1 bowl Thick Veg Poha (with peas, beans & 2 tbsp steamed Sabut Moong sprouts) + Unsweetened Tea + 1 tsp ground Alsi + 1 scoop Prohance HP",
+      midday: "150g Apple (सेब) + Lemon Water #1 with 1 tsp soaked Chia Seeds + Tender Coconut Water",
+      lunch: "Salad First + 2 katori Methi/Lauki Paneer (or blanched-and-drained Palak with 60g Low-Fat Paneer) + 1 katori Chana Dal + 2 Chokar Wheat Rotis + Chaas",
+      snack: "1 bowl Dry-Roasted Phool Makhana + Unsweetened Tea + 1 tbsp Pumpkin, Sunflower & Til Seeds + small cup Chaas (calcium binds seed oxalates)",
+      dinner: "2 Large Ragi/Oats/Dal Idlis + 1 bowl Drumstick (Munga) Toor Dal Sambar + Chaas (with 1 tsp ground Alsi) -> 1 scoop Prohance HP at 9:30 PM"
     },
     {
-      bf: "1-2 Moong Dal or Besan Chilla stuffed with 50g Low-Fat Paneer & Veggies + Chutney",
-      lunch: "2 katori Lauki Sabzi + 2 Rotis + 1 katori Dal + Salad",
-      dinner:
-        "1 bowl Veg Tahri / Brown Rice Pulao (double veggies & soya) + Clear Veg Soup + 1.5 scoops Prohance HP at 9:30 PM"
+      morning: "1 tsp soaked Methi Dana water + pinch of Cinnamon + Rapeed D -> 30-35m Walk -> 5 soaked & peeled Almonds + 3 soaked Walnuts",
+      bf: "2 Besan Chillas stuffed with 50g grated Low-Fat Paneer & veggies + Mint Chutney + Chaas (with 1 tsp ground Alsi) + 1 scoop Prohance HP",
+      midday: "150g Papaya (पपीता) + Lemon Water #1 with 1 tsp soaked Chia Seeds",
+      lunch: "Salad First + 2 katori Lauki Sabzi + 1 katori Toor/Arhar Dal + 1 Chokar Roti + 1 small katori Red/Brown Rice + Curd",
+      snack: "1 bowl Unsalted Bhuna Chana (Roasted Chana) + Unsweetened Tea + 1 tbsp Pumpkin, Sunflower & Til Seeds + small cup Chaas",
+      dinner: "1 bowl Brown Rice & Soya Chunks (Nutrela) Veg Tahri/Pulao (double veggies + 30g Soya Chunks) + Clear Veg Soup + Raita (with 1 tsp ground Alsi) -> 1.5 scoops Prohance HP at 9:30 PM"
     },
     {
-      bf: "1 small bowl Veg Upma + Handful Nuts & Seeds + 1 scoop Prohance HP",
-      lunch:
-        "1 katori Mix Veg + 1 katori Methi/Lauki Dal + 2 Multigrain Rotis + Salad",
-      dinner:
-        "1 bowl Roasted Wheat/Ragi Vermicelli + Raita + 50g Roasted Paneer + Broccoli + 1 scoop Prohance HP at 9:30 PM"
+      morning: "1 tsp soaked Methi Dana water + pinch of Cinnamon + Rapeed D -> 30-35m Walk -> 5 soaked & peeled Almonds + 3 soaked Walnuts",
+      bf: "1 bowl Coarse Wheat/Millet Rava Veg Upma + 1 tsp ground Alsi + 1 scoop Prohance HP in Skimmed Milk",
+      midday: "150g Pear (नाशपाती) or Kiwi + Lemon Water #1 with 1 tsp soaked Chia Seeds + Coconut Water",
+      lunch: "Salad First + 1 katori Mix Veg (Cabbage/Cauliflower/Beans) + 1 katori Methi/Lauki Moong Dal + 2 Multigrain/Jowar/Bajra Rotis + Chaas",
+      snack: "1 bowl Murmura Bhel (no namkeen) tossed with boiled Kala Chana, cucumber, deseeded tomato, lemon + 1 tbsp Pumpkin, Sunflower & Til Seeds",
+      dinner: "1 bowl Roasted Wheat/Ragi Vermicelli (सेवई) with veggies + 50g Roasted Low-Fat Paneer + Steamed Broccoli + Raita (with 1 tsp Alsi) -> 1 scoop Prohance HP at 9:30 PM"
     },
     {
-      bf: "1 bowl Steamed Sprouts (Green Moong, Soybean, Kala Chana) + 1 scoop Prohance HP",
-      lunch:
-        "2 katori Rajma / Soybean / Kala Chana Sabzi + 1 Multigrain Roti + 1 small katori Red/Brown Rice + Salad",
-      dinner:
-        "1 katori Thick Dal + 1 Multigrain Roti + Salad + 1.5 scoops Prohance HP at 9:30 PM"
+      morning: "1 tsp soaked Methi Dana water + pinch of Cinnamon + Rapeed D -> 30-35m Walk -> 5 soaked & peeled Almonds + 3 soaked Walnuts",
+      bf: "1 bowl Steamed Sprouts (Sabut Green Moong + Kala Chana + Soybean Seeds) with lemon & cucumber + 1 tsp ground Alsi + 1 scoop Prohance HP",
+      midday: "1 Orange (संतरा) or Mosambi + Lemon Water #1 with 1 tsp soaked Chia Seeds",
+      lunch: "Salad First + 2 katori Kala Chana & Soya Chunks Sabzi (or Rajma) + 1 Multigrain Roti + 1 small katori Red/Brown Rice + Chaas",
+      snack: "Chana Sattu Drink (2 tbsp Sattu) OR 1 bowl Homemade Unsalted Popcorn (मक्का दाने) + Unsweetened Tea + 1 tbsp Pumpkin, Sunflower & Til Seeds",
+      dinner: "1.5 katori Thick Yellow & Green Moong Dal + 1 Multigrain/Chokar Roti + Salad + Dahi (with 1 tsp Alsi) -> 1.5 scoops Prohance HP at 9:30 PM"
     },
     {
-      bf: "1 bowl Veg Daliya Khichdi OR Skimmed Milk + Daliya/Oats + 1 scoop Prohance HP",
-      lunch:
-        "2 katori Taroee / Munga (Drumstick) Sabzi (Avoid excess Bhindi) + 2 Rotis + Dahi/Raita + Salad",
-      dinner:
-        "1 large bowl Skimmed Milk + Oats OR Milk Daliya (Unsweetened + 1.5 scoops Prohance HP)"
+      morning: "1 tsp soaked Methi Dana water + pinch of Cinnamon + Rapeed D -> 30-35m Walk -> 5 soaked & peeled Almonds + 3 soaked Walnuts",
+      bf: "1 bowl Savory Veg Broken Wheat (Daliya) Khichdi (with Split Green Moong Dal & veggies) + Dahi (with 1 tsp ground Alsi) + 1 scoop Prohance HP",
+      midday: "150g Guava or Plum (आलूबुखारा) + Lemon Water #1 with 1 tsp soaked Chia Seeds + Coconut Water",
+      lunch: "Salad First + 2 katori Taroee (Ridge Gourd) & Munga (Drumstick) Sabzi + 1 katori Chana + Toor Dal + 2 Chokar Wheat Rotis + Raita",
+      snack: "1 bowl Roasted Makhana + Bhuna Chana Mix + Unsweetened Tea + 1 tbsp Pumpkin, Sunflower & Til Seeds + small cup Chaas",
+      dinner: "1 large bowl Unsweetened Skimmed Milk + Rolled Oats (or Milk Daliya) cooked with pinch of Cinnamon, 1 tsp ground Alsi & 1.5 scoops Prohance HP stirred in"
     },
     {
-      bf: "1 Dal/Oats Dosa + Sambar OR 2 katori Sabzi + 1 Roti + Dahi",
-      lunch:
-        "2 katori Beans (Rajma/Sem/Lobia/Gwar Phali) Sabzi + 2 Rotis + Salad + Chaas + Weekly Vit D3 60k Syrup after lunch",
-      dinner:
-        "1 large bowl Moong Dal Veg Khichdi + Dahi + 1 scoop Prohance HP at 9:30 PM"
+      morning: "1 tsp soaked Methi Dana water + pinch of Cinnamon + Rapeed D -> 30-35m Walk -> 5 soaked & peeled Almonds + 3 soaked Walnuts",
+      bf: "1 Crisp Moong Dal / Oats Dosa + Toor Dal Sambar (or 1 low-oil Methi/Gobhi Chokar Paratha + Dahi) + 1 tsp ground Alsi + 1 scoop Prohance HP",
+      midday: "150g Apple or Jamun/Papaya + Lemon Water #1 with 1 tsp soaked Chia Seeds",
+      lunch: "Salad First + 2 katori Lobia (Black-Eyed Peas) / Rajma / Gwar Phali Beans Sabzi + 2 Multigrain Rotis + Chaas + Weekly Vitamin D3 60k Syrup right after lunch!",
+      snack: "Chana Sattu Drink (2 tbsp) OR 1 bowl Murmura / Popcorn + Unsweetened Tea + 1 tbsp Pumpkin, Sunflower & Til Seeds",
+      dinner: "1 large bowl Split Green Moong Dal + Red/Brown Rice Kinki Veg Khichdi (2 parts dal & veggies : 1 part rice) + Dahi (with 1 tsp Alsi) -> 1 scoop Prohance HP at 9:30 PM"
     }
   ];
 
@@ -417,13 +425,22 @@
     var menuBoxEl = document.getElementById("todayMenuBox");
     if (menuBoxEl) {
       menuBoxEl.innerHTML =
-        '<div><strong style="color:var(--primary);">Breakfast (8:30 AM):</strong> ' +
+        '<div><strong style="color:var(--primary);">6:45 AM &amp; 7:15 AM Morning:</strong> ' +
+        d.morning +
+        "</div>" +
+        '<div><strong style="color:var(--primary);">8:30 AM Breakfast:</strong> ' +
         d.bf +
         "</div>" +
-        '<div><strong style="color:var(--success);">Lunch (1:30 PM):</strong> ' +
+        '<div><strong style="color:var(--success);">11:15 AM Mid-Day:</strong> ' +
+        d.midday +
+        "</div>" +
+        '<div><strong style="color:var(--success);">1:30 PM Lunch:</strong> ' +
         d.lunch +
         "</div>" +
-        '<div><strong style="color:var(--warn);">Dinner (7:30 PM) & Bedtime:</strong> ' +
+        '<div><strong style="color:var(--warn);">4:30 PM Evening Snack:</strong> ' +
+        d.snack +
+        "</div>" +
+        '<div><strong style="color:var(--warn);">7:30 PM Dinner &amp; 9:30 PM Bedtime:</strong> ' +
         d.dinner +
         "</div>";
     }
