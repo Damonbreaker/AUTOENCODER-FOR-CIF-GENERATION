@@ -434,9 +434,20 @@
       chkBoxes[j].checked = Boolean(state.checkupsDone[cid]);
     }
     var grocBoxes = document.querySelectorAll("input[data-groc]");
+    var grocDoneCount = 0;
     for (var k = 0; k < grocBoxes.length; k++) {
       var gid = grocBoxes[k].getAttribute("data-groc");
       grocBoxes[k].checked = Boolean(state.groceriesDone[gid]);
+      if (state.groceriesDone[gid]) grocDoneCount++;
+    }
+    var grocTitleEl = document.getElementById("groceryCountTitle");
+    if (grocTitleEl) {
+      grocTitleEl.textContent =
+        "1-Month Complete Grocery Checklist (" +
+        grocDoneCount +
+        " / " +
+        grocBoxes.length +
+        " Purchased)";
     }
 
     var latest =
@@ -613,6 +624,23 @@
   if (daySelect)
     daySelect.addEventListener("change", function (e) {
       state.dayIdx = parseInt(e.target.value, 10) || 0;
+      render();
+    });
+
+  var btnCheckAllGroc = document.getElementById("btnCheckAllGroc");
+  if (btnCheckAllGroc)
+    btnCheckAllGroc.addEventListener("click", function () {
+      var grocBoxes = document.querySelectorAll("input[data-groc]");
+      for (var i = 0; i < grocBoxes.length; i++) {
+        state.groceriesDone[grocBoxes[i].getAttribute("data-groc")] = true;
+      }
+      render();
+    });
+
+  var btnResetGroc = document.getElementById("btnResetGroc");
+  if (btnResetGroc)
+    btnResetGroc.addEventListener("click", function () {
+      state.groceriesDone = {};
       render();
     });
 
