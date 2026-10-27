@@ -258,7 +258,7 @@
         }
         showAppNotification(
           "Maternal Health App — Reminders Active",
-          "Daily reminders enabled for Ms. Rajni Singh (Rapeed D 7:00 AM, Glynamic MP2 + Ondero 5 8:45 AM, Lemon Water 11:15 AM & 3:15 PM, Obimet GX2 7:45 PM, Prohance HP 9:30 PM)."
+          "Daily reminders enabled for Ms. Rajni Singh (Rapeed D 7:00 AM, Glynamic MP2 + Ondero 5 8:45 AM, Lemon Water 11:15 AM & 3:15 PM, Obimet GX2 7:45 PM, Prohance HP 1 scoop 12.5 g at 9:30 PM)."
         );
       } else {
         if (notificationStatus) {
@@ -293,59 +293,59 @@
   var WEEKLY_DIET = [
     {
       morning: "1 tsp soaked Methi Dana water + pinch of Cinnamon + Rapeed D -> 30-35m Walk -> 5 soaked & peeled Almonds + 3 soaked Walnuts",
-      bf: "2 Oats Idli (or Red Rice/Dal Idli) + Toor Dal Sambar (1 tsp oil) + Chaas (with 1 tsp roasted ground Alsi/Flaxseed) + 1 scoop Prohance HP",
+      bf: "2 Oats Idli (or Red Rice/Dal Idli) + Toor Dal Sambar (1 tsp oil) + Chaas (with 1 tsp roasted ground Alsi/Flaxseed) + 1 level scoop (12.5 g) Prohance HP",
       midday: "150g Guava (अमरूद) + Lemon Water #1 with 1 tsp soaked Chia Seeds (20 mins soaked)",
       lunch: "Salad First + 2 katori Karela Sabzi + 1 katori Yellow Moong Dal + 2 Chokar Wheat Rotis (with Ajwain) + 1 glass Chaas (1.5 tsp oil)",
       snack: "Chana Sattu Drink (2 tbsp Sattu in Chaas/water) + 1 tbsp Roasted Pumpkin, Sunflower & White Til Seeds",
-      dinner: "2 Split Green Moong Dal Chillas (stuffed with grated Lauki & 30g Low-Fat Paneer) + Dahi Raita (with 1 tsp ground Alsi) -> 1.5 scoops Prohance HP in warm Skimmed Milk at 9:30 PM"
+      dinner: "2 Split Green Moong Dal Chillas (stuffed with grated Lauki & 30g Low-Fat Paneer) + Dahi Raita (with 1 tsp ground Alsi) -> 1 level scoop (12.5 g) Prohance HP in 150 mL warm Skimmed Milk at 9:30 PM"
     },
     {
       morning: "1 tsp soaked Methi Dana water + pinch of Cinnamon + Rapeed D -> 30-35m Walk -> 5 soaked & peeled Almonds + 3 soaked Walnuts",
-      bf: "1 bowl Thick Veg Poha (with peas, beans & 2 tbsp steamed Sabut Moong sprouts) + Unsweetened Tea + 1 tsp ground Alsi + 1 scoop Prohance HP",
+      bf: "1 bowl Thick Veg Poha (with peas, beans & 2 tbsp steamed Sabut Moong sprouts) + Unsweetened Tea + 1 tsp ground Alsi + 1 level scoop (12.5 g) Prohance HP",
       midday: "150g Apple (सेब) + Lemon Water #1 with 1 tsp soaked Chia Seeds + Tender Coconut Water",
       lunch: "Salad First + 2 katori Methi/Lauki Paneer (or blanched-and-drained Palak with 60g Low-Fat Paneer) + 1 katori Chana Dal + 2 Chokar Wheat Rotis + Chaas",
       snack: "1 bowl Dry-Roasted Phool Makhana + Unsweetened Tea + 1 tbsp Pumpkin, Sunflower & Til Seeds + small cup Chaas (calcium binds seed oxalates)",
-      dinner: "2 Large Ragi/Oats/Dal Idlis + 1 bowl Drumstick (Munga) Toor Dal Sambar + Chaas (with 1 tsp ground Alsi) -> 1 scoop Prohance HP at 9:30 PM"
+      dinner: "2 Large Ragi/Oats/Dal Idlis + 1 bowl Drumstick (Munga) Toor Dal Sambar + Chaas (with 1 tsp ground Alsi) -> 1 level scoop (12.5 g) Prohance HP in 150 mL warm Skimmed Milk at 9:30 PM"
     },
     {
       morning: "1 tsp soaked Methi Dana water + pinch of Cinnamon + Rapeed D -> 30-35m Walk -> 5 soaked & peeled Almonds + 3 soaked Walnuts",
-      bf: "2 Besan Chillas stuffed with 50g grated Low-Fat Paneer & veggies + Mint Chutney + Chaas (with 1 tsp ground Alsi) + 1 scoop Prohance HP",
+      bf: "2 Besan Chillas stuffed with 50g grated Low-Fat Paneer & veggies + Mint Chutney + Chaas (with 1 tsp ground Alsi) + 1 level scoop (12.5 g) Prohance HP",
       midday: "150g Papaya (पपीता) + Lemon Water #1 with 1 tsp soaked Chia Seeds",
       lunch: "Salad First + 2 katori Lauki Sabzi + 1 katori Toor/Arhar Dal + 1 Chokar Roti + 1 small katori Red/Brown Rice + Curd",
       snack: "1 bowl Unsalted Bhuna Chana (Roasted Chana) + Unsweetened Tea + 1 tbsp Pumpkin, Sunflower & Til Seeds + small cup Chaas",
-      dinner: "1 bowl Brown Rice & Soya Chunks (Nutrela) Veg Tahri/Pulao (double veggies + 30g Soya Chunks) + Clear Veg Soup + Raita (with 1 tsp ground Alsi) -> 1.5 scoops Prohance HP at 9:30 PM"
+      dinner: "1 bowl Brown Rice & Soya Chunks (Nutrela) Veg Tahri/Pulao (double veggies + 30g Soya Chunks) + Clear Veg Soup + Raita (with 1 tsp ground Alsi) -> 1 level scoop (12.5 g) Prohance HP in 150 mL warm Skimmed Milk at 9:30 PM"
     },
     {
       morning: "1 tsp soaked Methi Dana water + pinch of Cinnamon + Rapeed D -> 30-35m Walk -> 5 soaked & peeled Almonds + 3 soaked Walnuts",
-      bf: "1 bowl Coarse Wheat/Millet Rava Veg Upma + 1 tsp ground Alsi + 1 scoop Prohance HP in Skimmed Milk",
+      bf: "1 bowl Coarse Wheat/Millet Rava Veg Upma + 1 tsp ground Alsi + 1 level scoop (12.5 g) Prohance HP in Skimmed Milk",
       midday: "150g Pear (नाशपाती) or Kiwi + Lemon Water #1 with 1 tsp soaked Chia Seeds + Coconut Water",
       lunch: "Salad First + 1 katori Mix Veg (Cabbage/Cauliflower/Beans) + 1 katori Methi/Lauki Moong Dal + 2 Multigrain/Jowar/Bajra Rotis + Chaas",
       snack: "1 bowl Murmura Bhel (no namkeen) tossed with boiled Kala Chana, cucumber, deseeded tomato, lemon + 1 tbsp Pumpkin, Sunflower & Til Seeds",
-      dinner: "1 bowl Roasted Wheat/Ragi Vermicelli (सेवई) with veggies + 50g Roasted Low-Fat Paneer + Steamed Broccoli + Raita (with 1 tsp Alsi) -> 1 scoop Prohance HP at 9:30 PM"
+      dinner: "1 bowl Roasted Wheat/Ragi Vermicelli (सेवई) with veggies + 50g Roasted Low-Fat Paneer + Steamed Broccoli + Raita (with 1 tsp Alsi) -> 1 level scoop (12.5 g) Prohance HP in 150 mL warm Skimmed Milk at 9:30 PM"
     },
     {
       morning: "1 tsp soaked Methi Dana water + pinch of Cinnamon + Rapeed D -> 30-35m Walk -> 5 soaked & peeled Almonds + 3 soaked Walnuts",
-      bf: "1 bowl Steamed Sprouts (Sabut Green Moong + Kala Chana + Soybean Seeds) with lemon & cucumber + 1 tsp ground Alsi + 1 scoop Prohance HP",
+      bf: "1 bowl Steamed Sprouts (Sabut Green Moong + Kala Chana + Soybean Seeds) with lemon & cucumber + 1 tsp ground Alsi + 1 level scoop (12.5 g) Prohance HP",
       midday: "1 Orange (संतरा) or Mosambi + Lemon Water #1 with 1 tsp soaked Chia Seeds",
       lunch: "Salad First + 2 katori Kala Chana & Soya Chunks Sabzi (or Rajma) + 1 Multigrain Roti + 1 small katori Red/Brown Rice + Chaas",
       snack: "Chana Sattu Drink (2 tbsp Sattu) OR 1 bowl Homemade Unsalted Popcorn (मक्का दाने) + Unsweetened Tea + 1 tbsp Pumpkin, Sunflower & Til Seeds",
-      dinner: "1.5 katori Thick Yellow & Green Moong Dal + 1 Multigrain/Chokar Roti + Salad + Dahi (with 1 tsp Alsi) -> 1.5 scoops Prohance HP at 9:30 PM"
+      dinner: "1.5 katori Thick Yellow & Green Moong Dal + 1 Multigrain/Chokar Roti + Salad + Dahi (with 1 tsp Alsi) -> 1 level scoop (12.5 g) Prohance HP in 150 mL warm Skimmed Milk at 9:30 PM"
     },
     {
       morning: "1 tsp soaked Methi Dana water + pinch of Cinnamon + Rapeed D -> 30-35m Walk -> 5 soaked & peeled Almonds + 3 soaked Walnuts",
-      bf: "1 bowl Savory Veg Broken Wheat (Daliya) Khichdi (with Split Green Moong Dal & veggies) + Dahi (with 1 tsp ground Alsi) + 1 scoop Prohance HP",
+      bf: "1 bowl Savory Veg Broken Wheat (Daliya) Khichdi (with Split Green Moong Dal & veggies) + Dahi (with 1 tsp ground Alsi) + 1 level scoop (12.5 g) Prohance HP",
       midday: "150g Guava or Plum (आलूबुखारा) + Lemon Water #1 with 1 tsp soaked Chia Seeds + Coconut Water",
       lunch: "Salad First + 2 katori Taroee (Ridge Gourd) & Munga (Drumstick) Sabzi + 1 katori Chana + Toor Dal + 2 Chokar Wheat Rotis + Raita",
       snack: "1 bowl Roasted Makhana + Bhuna Chana Mix + Unsweetened Tea + 1 tbsp Pumpkin, Sunflower & Til Seeds + small cup Chaas",
-      dinner: "1 large bowl Unsweetened Skimmed Milk + Rolled Oats (or Milk Daliya) cooked with pinch of Cinnamon, 1 tsp ground Alsi & 1.5 scoops Prohance HP stirred in"
+      dinner: "1 large bowl Unsweetened Skimmed Milk + Rolled Oats (or Milk Daliya) cooked with pinch of Cinnamon, 1 tsp ground Alsi & 1 level scoop (12.5 g) Prohance HP stirred in (this is the 9:30 PM scoop; do not give another scoop later)"
     },
     {
       morning: "1 tsp soaked Methi Dana water + pinch of Cinnamon + Rapeed D -> 30-35m Walk -> 5 soaked & peeled Almonds + 3 soaked Walnuts",
-      bf: "1 Crisp Moong Dal / Oats Dosa + Toor Dal Sambar (or 1 low-oil Methi/Gobhi Chokar Paratha + Dahi) + 1 tsp ground Alsi + 1 scoop Prohance HP",
+      bf: "1 Crisp Moong Dal / Oats Dosa + Toor Dal Sambar (or 1 low-oil Methi/Gobhi Chokar Paratha + Dahi) + 1 tsp ground Alsi + 1 level scoop (12.5 g) Prohance HP",
       midday: "150g Apple or Jamun/Papaya + Lemon Water #1 with 1 tsp soaked Chia Seeds",
       lunch: "Salad First + 2 katori Lobia (Black-Eyed Peas) / Rajma / Gwar Phali Beans Sabzi + 2 Multigrain Rotis + Chaas + Weekly Vitamin D3 60k Syrup right after lunch!",
       snack: "Chana Sattu Drink (2 tbsp) OR 1 bowl Murmura / Popcorn + Unsweetened Tea + 1 tbsp Pumpkin, Sunflower & Til Seeds",
-      dinner: "1 large bowl Split Green Moong Dal + Red/Brown Rice Kinki Veg Khichdi (2 parts dal & veggies : 1 part rice) + Dahi (with 1 tsp Alsi) -> 1 scoop Prohance HP at 9:30 PM"
+      dinner: "1 large bowl Split Green Moong Dal + Red/Brown Rice Kinki Veg Khichdi (2 parts dal & veggies : 1 part rice) + Dahi (with 1 tsp Alsi) -> 1 level scoop (12.5 g) Prohance HP in 150 mL warm Skimmed Milk at 9:30 PM"
     }
   ];
 
@@ -488,7 +488,7 @@
           " | PP: " +
           latest.pp +
           " mg/dL)",
-        body: "Continue Glynamic MP2 + Ondero 5 after breakfast, Obimet GX2 after 7:30 PM dinner, and 1.5 scoops Prohance HP at 9:30 PM."
+        body: "Continue Glynamic MP2 + Ondero 5 after breakfast, Obimet GX2 after 7:30 PM dinner, and the label Prohance HP dose: 1 level scoop (12.5 g) at 8:30 AM plus 1 level scoop (12.5 g) at 9:30 PM (25 g = 20.8 g protein). Do not use 1.5 scoops."
       });
     } else {
       adv.push({
@@ -538,6 +538,11 @@
         body: "Give 1 Sugar-Free 60k IU bottle every Sunday right AFTER Lunch."
       });
     }
+    adv.push({
+      cls: "success",
+      title: "Prohance HP label dose (2 scoops = 25 g = 20.8 g protein)",
+      body: "Use exactly 1 level scoop (12.5 g) at 8:30 AM and exactly 1 level scoop (12.5 g) at 9:30 PM. That is one printed serving, about 7.2 g carbohydrate, 0 added sugar. On Saturday stir the night scoop into the milk oats and do not add a third scoop. Buy 2 tins (800 g) for the month: 25 g x 30 days = 750 g, and one 400 g tin is 16 days. Kidneys at eGFR 106 can handle this amount. Do not increase the scoops."
+    });
 
     var adviceContainer = document.getElementById("dynamicAdviceContainer");
     if (adviceContainer) {
