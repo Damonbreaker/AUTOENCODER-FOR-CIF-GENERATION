@@ -1,0 +1,460 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <meta name="theme-color" content="#0f172a" />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-title" content="Maternal Health App" />
+  <link rel="manifest" href="./manifest.json">
+  <link rel="icon" type="image/svg+xml" href="./assets/icon.svg" />
+  <link rel="apple-touch-icon" href="./assets/icon-180.png" />
+  <link rel="icon" type="image/png" sizes="32x32" href="./assets/icon-32.png" />
+  <link rel="icon" type="image/png" sizes="16x16" href="./assets/icon-16.png" />
+  <title>Maternal Health App — Ms. Rajni Singh Care Tracker</title>
+  <style>
+    :root {
+      --bg: #0f172a; --surface: #1e293b; --surface2: #334155; --border: #334155;
+      --text: #f8fafc; --muted: #94a3b8; --primary: #38bdf8; --primary-dark: #0284c7;
+      --success: #22c55e; --success-bg: rgba(34, 197, 94, 0.14);
+      --warn: #f59e0b; --warn-bg: rgba(245, 158, 11, 0.14);
+      --danger: #ef4444; --danger-bg: rgba(239, 68, 68, 0.14);
+      --info-bg: rgba(56, 189, 248, 0.14); --radius: 14px;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+    body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: var(--bg); color: var(--text); line-height: 1.5; padding-bottom: 90px; }
+    header { background: var(--surface); border-bottom: 1px solid var(--border); padding: 12px 16px; position: sticky; top: 0; z-index: 50; }
+    .header-top { display: flex; justify-content: space-between; align-items: center; gap: 10px; flex-wrap: wrap; }
+    .brand-row { display: flex; align-items: center; gap: 10px; }
+    .brand-avatar { width: 42px; height: 42px; border-radius: 10px; object-fit: cover; border: 1.5px solid var(--primary); }
+    h1 { font-size: 1.05rem; font-weight: 700; }
+    .badge { background: var(--info-bg); color: var(--primary); border: 1px solid rgba(56, 189, 248, 0.35); padding: 3px 10px; border-radius: 999px; font-size: 0.74rem; font-weight: 600; }
+    .subtitle { font-size: 0.75rem; color: var(--muted); }
+    .container { max-width: 900px; margin: 0 auto; padding: 12px; }
+
+    /* Pure CSS Tab Switching */
+    input.tab-radio { display: none; }
+    .tab-panel { display: none; }
+    #rad-daily:checked ~ .container #tab-daily,
+    #rad-reports:checked ~ .container #tab-reports,
+    #rad-schedule:checked ~ .container #tab-schedule,
+    #rad-diet:checked ~ .container #tab-diet,
+    #rad-grocery:checked ~ .container #tab-grocery {
+      display: block;
+    }
+    .bottom-nav { position: fixed; bottom: 0; left: 0; right: 0; background: var(--surface); border-top: 1px solid var(--border); display: grid; grid-template-columns: repeat(5, 1fr); z-index: 100; padding: 6px 4px 10px; }
+    .nav-label { background: transparent; border: none; color: var(--muted); display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px; font-size: 0.68rem; padding: 7px 2px; border-radius: 8px; cursor: pointer; text-align: center; user-select: none; }
+    #rad-daily:checked ~ .bottom-nav label[for="rad-daily"],
+    #rad-reports:checked ~ .bottom-nav label[for="rad-reports"],
+    #rad-schedule:checked ~ .bottom-nav label[for="rad-schedule"],
+    #rad-diet:checked ~ .bottom-nav label[for="rad-diet"],
+    #rad-grocery:checked ~ .bottom-nav label[for="rad-grocery"] {
+      color: var(--primary); background: var(--info-bg); font-weight: 700;
+    }
+
+    .grid-2, .grid-4 { display: grid; gap: 10px; margin-bottom: 14px; }
+    .grid-2 { grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); }
+    .grid-4 { grid-template-columns: repeat(2, 1fr); }
+    .card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 13px; margin-bottom: 12px; }
+    .card-title { font-size: 0.74rem; text-transform: uppercase; color: var(--muted); margin-bottom: 5px; display: flex; justify-content: space-between; align-items: center; }
+    .stat-val { font-size: 1.22rem; font-weight: 700; }
+    .stat-sub { font-size: 0.72rem; color: var(--muted); }
+    .text-success { color: var(--success); } .text-warn { color: var(--warn); } .text-danger { color: var(--danger); } .text-primary { color: var(--primary); }
+    .btn-row { display: flex; gap: 8px; margin-top: 8px; flex-wrap: wrap; align-items: center; }
+    button, .btn { background: var(--surface2); color: var(--text); border: 1px solid var(--border); padding: 8px 12px; border-radius: 8px; font-size: 0.8rem; font-weight: 600; cursor: pointer; touch-action: manipulation; }
+    button.primary { background: var(--primary-dark); border-color: var(--primary); color: #fff; }
+    button.success { background: #15803d; border-color: var(--success); color: #fff; }
+    .callout { border-radius: var(--radius); padding: 11px 13px; margin-bottom: 10px; border-left: 4px solid var(--primary); background: var(--info-bg); }
+    .callout.warn { border-left-color: var(--warn); background: var(--warn-bg); }
+    .callout.danger { border-left-color: var(--danger); background: var(--danger-bg); }
+    .callout.success { border-left-color: var(--success); background: var(--success-bg); }
+    .callout-title { font-weight: 700; font-size: 0.87rem; margin-bottom: 3px; }
+    .callout-body { font-size: 0.8rem; color: #e2e8f0; }
+    .task-item { display: flex; align-items: flex-start; gap: 11px; padding: 12px; border-bottom: 1px solid var(--border); cursor: pointer; }
+    .task-item:last-child { border-bottom: none; }
+    .task-check { width: 22px; height: 22px; margin-top: 2px; accent-color: var(--success); flex-shrink: 0; cursor: pointer; }
+    .task-check:checked + .task-content { opacity: 0.5; }
+    .task-check:checked + .task-content .task-title { text-decoration: line-through; }
+    .task-content { flex: 1; }
+    .task-meta { display: flex; gap: 7px; align-items: center; margin-bottom: 2px; flex-wrap: wrap; }
+    .task-time { font-size: 0.76rem; font-weight: 700; color: var(--primary); }
+    .task-tag { font-size: 0.66rem; padding: 1px 6px; border-radius: 5px; background: var(--surface2); color: var(--muted); }
+    .task-title { font-weight: 600; font-size: 0.88rem; }
+    .task-desc { font-size: 0.78rem; color: var(--muted); }
+    select, input[type="text"], input[type="number"], input[type="date"] { width: 100%; background: var(--bg); color: var(--text); border: 1px solid var(--border); border-radius: 8px; padding: 8px 10px; font-size: 0.85rem; margin-top: 4px; }
+    label.field-lbl { font-size: 0.75rem; font-weight: 600; color: var(--muted); display: block; margin-top: 7px; }
+    .section-title { font-size: 0.96rem; font-weight: 700; margin: 12px 0 8px; }
+    .table-wrap { overflow-x: auto; }
+    table { width: 100%; border-collapse: collapse; font-size: 0.8rem; }
+    th, td { padding: 9px; text-align: left; border-bottom: 1px solid var(--border); vertical-align: top; }
+    th { color: var(--muted); font-size: 0.72rem; text-transform: uppercase; }
+    details.card { padding: 0; overflow: hidden; }
+    details.card summary { padding: 12px 14px; font-weight: 700; font-size: 0.86rem; cursor: pointer; background: var(--surface2); color: var(--primary); list-style: none; }
+    details.card .details-body { padding: 13px; }
+    #webcam {
+      width: 100%;
+      max-height: 320px;
+      background: #000;
+      border-radius: 10px;
+      margin-top: 10px;
+      display: none;
+      object-fit: cover;
+    }
+  </style>
+</head>
+<body>
+
+<!-- Pure CSS Radio Inputs for Bottom Navigation Tabs -->
+<input type="radio" name="main-tab" id="rad-daily" class="tab-radio" checked />
+<input type="radio" name="main-tab" id="rad-reports" class="tab-radio" />
+<input type="radio" name="main-tab" id="rad-schedule" class="tab-radio" />
+<input type="radio" name="main-tab" id="rad-diet" class="tab-radio" />
+<input type="radio" name="main-tab" id="rad-grocery" class="tab-radio" />
+
+<header>
+  <div class="header-top">
+    <div class="brand-row">
+      <img src="./assets/icon.svg" alt="Maa Care Icon" class="brand-avatar" />
+      <div>
+        <h1>Ms. Rajni Singh (54F) — Maternal Health App</h1>
+        <div class="subtitle">Diabetes, Kidney Stone Protection, Prohance HP & Lab Report Tracker</div>
+      </div>
+    </div>
+    <span class="badge" id="headerProgressBadge">Today: 0/12 Done</span>
+  </div>
+</header>
+
+<div class="container">
+
+  <!-- PWA INSTALL, CAMERA & NOTIFICATION CONTROLS BAR -->
+  <div class="card">
+    <div class="card-title"><span>Install App, Camera Scanner & Care Notifications</span></div>
+    <div class="btn-row">
+      <button type="button" class="success" id="installPwaBtn" style="display:none;">Install App on Phone</button>
+      <button type="button" class="primary" id="openCameraBtn">Open Camera</button>
+      <button type="button" class="success" id="capturePhotoBtn" style="display:none;">Capture Report Photo</button>
+      <button type="button" class="primary" id="enableNotificationsBtn">Enable Notifications</button>
+      <button type="button" id="testNotificationBtn" style="display:none;">Send Reminder Alert</button>
+    </div>
+    <div class="camera-container">
+      <video id="webcam" autoplay playsinline></video>
+      <canvas id="capturedCanvas" style="display:none;"></canvas>
+    </div>
+    <div class="stat-sub" id="pwaInstallStatus" style="margin-top:6px;"></div>
+    <div class="stat-sub" id="cameraStatus" style="margin-top:4px;"></div>
+    <div class="stat-sub" id="notificationStatus" style="margin-top:2px;"></div>
+    <div id="capturedGallery" class="grid-2" style="margin-top:10px;margin-bottom:0;"></div>
+  </div>
+
+  <!-- TAB 1: DAILY CHECKLIST -->
+  <section id="tab-daily" class="tab-panel">
+    <div class="grid-4">
+      <div class="card">
+        <div class="card-title"><span>Daily Tasks</span></div>
+        <div class="stat-val text-primary" id="statTasks">0 / 12</div>
+        <div class="stat-sub">Tap checkboxes below</div>
+      </div>
+      <div class="card">
+        <div class="card-title"><span>Water (Stone Shield)</span></div>
+        <div class="stat-val text-success" id="statWater">6 (1.50 L)</div>
+        <div class="stat-sub">Goal: 10-12 glasses</div>
+        <div class="btn-row">
+          <button type="button" class="primary" id="btnWaterPlus">+1</button>
+          <button type="button" id="btnWaterMinus">-1</button>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-title"><span>Lemon Water</span></div>
+        <div class="stat-val text-warn" id="statLemon">1 / 2</div>
+        <div class="stat-sub">Citrate dissolves crystals</div>
+        <div class="btn-row">
+          <button type="button" class="primary" id="btnLemonPlus">+1</button>
+          <button type="button" id="btnLemonMinus">-1</button>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-title"><span>Sun Vit D3 60k</span></div>
+        <div class="stat-val text-primary" id="statVitD">3 / 8</div>
+        <div class="stat-sub" id="statVitDSub">Cap at 8 doses</div>
+        <div class="btn-row">
+          <button type="button" id="btnVitDPlus">+1</button>
+          <button type="button" id="btnVitDMinus">-1</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">
+        <span>Today's Menu (Select Day)</span>
+        <button type="button" id="btnResetDay" style="padding:4px 9px;font-size:0.72rem;">Reset Today</button>
+      </div>
+      <select id="daySelect">
+        <option value="0">Monday (सोमवार)</option>
+        <option value="1">Tuesday (मंगलवार)</option>
+        <option value="2">Wednesday (बुधवार)</option>
+        <option value="3">Thursday (गुरुवार)</option>
+        <option value="4">Friday (शुक्रवार)</option>
+        <option value="5">Saturday (शनिवार)</option>
+        <option value="6">Sunday (रविवार)</option>
+      </select>
+      <div id="todayMenuBox" style="margin-top:10px;display:grid;gap:8px;font-size:0.82rem;">
+        <div><strong style="color:var(--primary);">6:45 AM &amp; 7:15 AM Morning:</strong> 1 tsp soaked Methi Dana water + 1 pinch Cinnamon + Rapeed D &rarr; 30-35m Walk &rarr; 5 soaked &amp; peeled Almonds + 3 soaked Walnuts</div>
+        <div><strong style="color:var(--primary);">8:30 AM Breakfast:</strong> 2 Oats Idli (or Red Rice/Dal Idli) + Toor Dal Sambar (1 tsp oil) + Chaas (with 1 tsp roasted ground Alsi/Flaxseed) + 1 level scoop (12.5 g) Prohance HP</div>
+        <div><strong style="color:var(--success);">11:15 AM Mid-Day:</strong> 150g Guava (अमरूद) + 1 glass Warm Lemon Water #1 (with 1 tsp soaked Chia Seeds)</div>
+        <div><strong style="color:var(--success);">1:30 PM Lunch:</strong> Salad First (Cucumber/Radish) + 2 katori Karela Sabzi + 1 katori Yellow Moong Dal + 2 Chokar Wheat Rotis (with Ajwain) + 1 glass Chaas</div>
+        <div><strong style="color:var(--warn);">4:30 PM Evening Snack:</strong> 1 glass Chana Sattu (2 tbsp) in buttermilk/water + 1 tbsp Roasted Pumpkin &amp; Sunflower Seeds (paired with Chaas calcium for stone safety)</div>
+        <div><strong style="color:var(--warn);">7:30 PM Dinner &amp; 9:30 PM Bedtime:</strong> 2 Green Split Moong Dal Chillas (stuffed with grated Lauki &amp; 30g Low-Fat Paneer) + 1 katori Dahi Raita (with 1/2 tsp roasted Til) &rarr; 1 level scoop (12.5 g) Prohance HP in 150mL warm Skimmed Milk at 9:30 PM</div>
+      </div>
+    </div>
+
+    <div class="section-title">Step-by-Step Daily Checklist (6:45 AM – 9:30 PM)</div>
+    <div class="card" style="padding:0;" id="dailyTasksList">
+      <label class="task-item"><input type="checkbox" class="task-check" data-task="dt1" /><div class="task-content"><div class="task-meta"><span class="task-time">6:45 AM</span><span class="task-tag">Medicine &amp; Spice</span></div><div class="task-title">Warm Methi + Cinnamon Water + Rapeed D (1 Cap)</div><div class="task-desc">1 glass warm water with 1 tsp overnight-soaked Methi Dana + 1 pinch Cinnamon (Dalchini) + 1 Cap Rapeed D empty stomach.</div></div></label>
+      <label class="task-item"><input type="checkbox" class="task-check" data-task="dt2" /><div class="task-content"><div class="task-meta"><span class="task-time">7:15 AM</span><span class="task-tag">Walk &amp; Nuts</span></div><div class="task-title">30-35 Min Brisk Walk + 5 Peeled Almonds &amp; 3 Walnuts</div><div class="task-desc">Soak 5 Badam + 3 Akhrot overnight. Always PEEL almond skin (removes oxalates for kidney stone safety). Walnuts lower 232 Triglycerides.</div></div></label>
+      <label class="task-item"><input type="checkbox" class="task-check" data-task="dt3" /><div class="task-content"><div class="task-meta"><span class="task-time">8:00 AM</span><span class="task-tag">Testing</span></div><div class="task-title">Fasting Sugar Check (Mon / Wed / Sat)</div><div class="task-desc">Check glucometer 3 days/week and log in Tab 2 (Reports/AI).</div></div></label>
+      <label class="task-item"><input type="checkbox" class="task-check" data-task="dt4" /><div class="task-content"><div class="task-meta"><span class="task-time">8:30 AM</span><span class="task-tag">Breakfast + Alsi + Protein</span></div><div class="task-title">Day-Wise Breakfast + 1 tsp Ground Alsi (Flaxseed) + 1 level scoop (12.5 g) Prohance HP</div><div class="task-desc">Follow today's breakfast menu + stir 1 tsp roasted ground Alsi into morning Dahi/Chaas/Oats (heart Omega-3) + exactly 1 level scoop (12.5 g) Prohance HP in 120 mL warm skimmed milk or water. With the 9:30 PM scoop this is the tin serving: 2 scoops = 25 g = 20.8 g protein.</div></div></label>
+      <label class="task-item"><input type="checkbox" class="task-check" data-task="dt5" /><div class="task-content"><div class="task-meta"><span class="task-time">8:45 AM</span><span class="task-tag">Medicine</span></div><div class="task-title">Glynamic MP 2 (1 Tab) + Ondero 5 (1 Tab)</div><div class="task-desc">Take immediately after breakfast. Never skip breakfast or 11:15 AM fruit.</div></div></label>
+      <label class="task-item"><input type="checkbox" class="task-check" data-task="dt6" /><div class="task-content"><div class="task-meta"><span class="task-time">11:15 AM</span><span class="task-tag">Fruit + Chia + Stone Shield</span></div><div class="task-title">Mid-Day Whole Fruit + Lemon Water #1 with 1 tsp Soaked Chia Seeds</div><div class="task-desc">100-150g day-wise fruit + 1 glass Lemon Water (or Coconut Water) with 1 tsp Chia Seeds soaked 20 mins. Citrate dissolves kidney stone crystals &amp; Chia slows sugar!</div></div></label>
+      <label class="task-item"><input type="checkbox" class="task-check" data-task="dt7" /><div class="task-content"><div class="task-meta"><span class="task-time">1:30 PM</span><span class="task-tag">Lunch (Salad First)</span></div><div class="task-title">Lunch: 1 Bowl Raw Salad &rarr; 2 Bowls Sabzi &amp; Dal &rarr; Roti/Red Rice + Chaas</div><div class="task-desc">Cook in &le;1 tsp Mustard/Groundnut/Rice Bran oil. Add 1 pinch Ajwain to Chokar/Multigrain roti dough. (Sundays: Take Vit D3 60k syrup right after lunch).</div></div></label>
+      <label class="task-item"><input type="checkbox" class="task-check" data-task="dt8" /><div class="task-content"><div class="task-meta"><span class="task-time">3:15 PM</span><span class="task-tag">Stone Shield</span></div><div class="task-title">Afternoon Lemon Water #2 (Unsweetened)</div><div class="task-desc">2nd glass of fresh Lemon Water (citrate stops Calcium Oxalate &amp; Triple Phosphate crystals). Ensure 1.8L water done by 3:30 PM.</div></div></label>
+      <label class="task-item"><input type="checkbox" class="task-check" data-task="dt9" /><div class="task-content"><div class="task-meta"><span class="task-time">4:30 PM</span><span class="task-tag">Snack + Pumpkin/Sunflower/Til Seeds</span></div><div class="task-title">Day-Wise Evening Snack (Sattu/Makhana/Chana/Murmura/Popcorn) + 1 tbsp Seed Mix</div><div class="task-desc">Follow today's 4:30 PM snack + 1 level tbsp roasted Pumpkin, Sunflower &amp; White Til seeds. Always take with a small cup of Chaas/Milk so dairy calcium binds seed oxalates in the gut!</div></div></label>
+      <label class="task-item"><input type="checkbox" class="task-check" data-task="dt10" /><div class="task-content"><div class="task-meta"><span class="task-time">7:30 PM</span><span class="task-tag">Dinner + 1 tsp Alsi</span></div><div class="task-title">Early Light Dinner + 1 tsp Ground Alsi in Raita/Dal + 15 Min Stroll</div><div class="task-desc">Finish dinner by 7:30-8:00 PM (Chilla / Idli / Tahri / Vermicelli / Khichdi) + 15-min gentle walk.</div></div></label>
+      <label class="task-item"><input type="checkbox" class="task-check" data-task="dt11" /><div class="task-content"><div class="task-meta"><span class="task-time">7:45 PM</span><span class="task-tag">Medicine</span></div><div class="task-title">Obimet GX 2 (1 Tablet)</div><div class="task-desc">Take immediately after dinner to control night &amp; morning fasting sugar.</div></div></label>
+      <label class="task-item"><input type="checkbox" class="task-check" data-task="dt12" /><div class="task-content"><div class="task-meta"><span class="task-time">9:30 PM</span><span class="task-tag">Bedtime Protein</span></div><div class="task-title">Bedtime Prohance HP (exactly 1 level scoop = 12.5 g in 150 mL warm skimmed milk)</div><div class="task-desc">Exactly 1 level scoop (12.5 g). With the 8:30 AM scoop this is the printed serving: 2 scoops = 25 g = 20.8 g protein, 0 added sugar. On Saturday this scoop is already in the milk oats — do not add a second night scoop. It covers the overnight glucose rise and a night low.</div></div></label>
+    </div>
+  </section>
+
+  <!-- TAB 2: REPORTS & SMART JUDGEMENT -->
+  <section id="tab-reports" class="tab-panel">
+    <details class="card">
+      <summary>+ Tap Here to Log New Sugar Reading or Lab Report</summary>
+      <div class="details-body">
+        <div class="grid-2">
+          <div>
+            <label class="field-lbl">Date</label><input type="date" id="inpDate" value="2026-10-26" />
+            <label class="field-lbl">Label</label><input type="text" id="inpLabel" placeholder="Home Check / Nov 8 Lab Report" />
+            <label class="field-lbl">Fasting Sugar (mg/dL)</label><input type="number" id="inpFasting" placeholder="210" />
+            <label class="field-lbl">Post-Meal (PP) Sugar (mg/dL)</label><input type="number" id="inpPP" placeholder="235" />
+            <label class="field-lbl">HbA1c (%)</label><input type="number" step="0.1" id="inpHba1c" placeholder="12.0" />
+          </div>
+          <div>
+            <label class="field-lbl">Triglycerides (mg/dL)</label><input type="number" id="inpTG" placeholder="232" />
+            <label class="field-lbl">Creatinine & eGFR</label><div style="display:flex;gap:6px;"><input type="number" step="0.01" id="inpCreat" placeholder="0.61" /><input type="number" id="inpEgfr" placeholder="106" /></div>
+            <label class="field-lbl">Vitamin D (nmol/L) & Calcium (mg/dL)</label><div style="display:flex;gap:6px;"><input type="number" step="0.1" id="inpVitD" placeholder="48" /><input type="number" step="0.1" id="inpCalc" placeholder="9.29" /></div>
+            <label class="field-lbl">Urine Yeast & Crystals (/hpf)</label><div style="display:flex;gap:6px;"><input type="number" step="0.1" id="inpYeast" placeholder="0.0" /><input type="number" step="0.1" id="inpCrystals" placeholder="0.0" /></div>
+            <label class="field-lbl">Notes</label><input type="text" id="inpNotes" placeholder="Symptoms or doctor notes..." />
+          </div>
+        </div>
+        <div class="btn-row">
+          <button type="button" class="success" id="btnSaveReport">Save & Recalculate Guidance</button>
+        </div>
+      </div>
+    </details>
+
+    <div class="section-title">Live Automated Clinical Judgement</div>
+    <div id="dynamicAdviceContainer">
+      <div class="callout warn"><div class="callout-title">Active Sugar Reduction (Fasting: 225 | PP: 254 mg/dL)</div><div class="callout-body">PP sugar dropped by 205 mg/dL (from 459.3 to 254), but remains above the 180 mg/dL kidney threshold. Continue Glynamic MP2 + Ondero 5 after breakfast, Obimet GX2 after 7:30 PM dinner, and the label Prohance HP dose: 1 level scoop (12.5 g) at 8:30 AM plus 1 level scoop (12.5 g) at 9:30 PM (25 g = 20.8 g protein). Do not use 1.5 scoops.</div></div>
+      <div class="callout warn"><div class="callout-title">Urine Yeast & Stone Crystal Shield Active</div><div class="callout-body">Drink 2.5-3.0L water + 2 glasses unsweetened Lemon Water daily (citrate dissolves Calcium Oxalate crystals). Repeat Urine R/E around Nov 8-10.</div></div>
+      <div class="callout"><div class="callout-title">Vitamin D3 60k Weekly Course (3/8 Done — 5 Left)</div><div class="callout-body">Give 1 Sugar-Free 60k IU bottle every Sunday immediately AFTER Lunch. Cap at 8 doses total due to past kidney stone surgery.</div></div>
+      <div class="callout success"><div class="callout-title">Kidneys Healthy (Creatinine 0.61 | eGFR 106) — Safe for 2 Scoops Prohance HP/Day</div><div class="callout-body">Normal kidney filtration (eGFR 106). The label dose is the right amount: 1 level scoop (12.5 g) at breakfast and 1 level scoop (12.5 g) at 9:30 PM. That is 25 g powder and 20.8 g protein. Do not add extra scoops.</div></div>
+    </div>
+
+    <div class="section-title">Report History</div>
+    <div class="card table-wrap" style="padding:0;">
+      <table id="reportsTable">
+        <thead><tr><th>Date</th><th>Fasting/PP</th><th>HbA1c/TG</th><th>Kidney/VitD</th><th>Urine</th></tr></thead>
+        <tbody>
+          <tr><td><strong>2026-10-25</strong><br/>3-Wk Check + Itra 200</td><td><strong>225 / 254</strong></td><td>12.0% | TG:232</td><td>Cr:0.61 | VitD:48</td><td>Y:5.0 C:1.0</td></tr>
+          <tr><td><strong>2026-10-04</strong><br/>Baseline Lal PathLabs</td><td><strong>230.9 / 459.3</strong></td><td>12.0% | TG:232</td><td>Cr:0.61 | VitD:36.7</td><td>Y:36.6 C:1.5</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- TAB 3: CHECKUP REMINDERS -->
+  <section id="tab-schedule" class="tab-panel">
+    <div class="section-title">12-Month Checkup & Lab Test Reminders</div>
+    <div class="card" style="padding:0;" id="checkupListContainer">
+      <label class="task-item"><input type="checkbox" class="task-check" data-chk="c1" /><div class="task-content"><div class="task-meta"><span class="task-time">Nov 8–10, 2026 (In 2 Weeks)</span></div><div class="task-title">Urine Infection & Crystal Clearance Check</div><div class="task-desc"><strong>Tests:</strong> Urine Routine & Microscopy (Urine R/E) + Fasting & PP Sugar.<br/>Confirms Yeast (36.6 /hpf), Bacteria (96 /hpf), and Oxalate crystals cleared after Itra 200.</div></div></label>
+      <label class="task-item"><input type="checkbox" class="task-check" data-chk="c2" /><div class="task-content"><div class="task-meta"><span class="task-time">Dec 6, 2026 (At 8 Weeks)</span></div><div class="task-title">Finish 8th Weekly Vitamin D3 60k Bottle & Stop Weekly Dosing</div><div class="task-desc"><strong>Rule:</strong> Cap weekly 60k IU syrup at 8 bottles total to prevent excess urinary calcium (kidney stone history).</div></div></label>
+      <label class="task-item"><input type="checkbox" class="task-check" data-chk="c3" /><div class="task-content"><div class="task-meta"><span class="task-time">Jan 6–10, 2027 (At 3 Months)</span></div><div class="task-title">Major 90-Day Diabetes, Lipid, Vit D & Stone Safety Review</div><div class="task-desc"><strong>Tests:</strong> HbA1c, Lipid Profile (TG/HDL/LDL), LFT (ALT/ALP), 25-(OH) Vit D, Serum Calcium, Creatinine, Uric Acid.</div></div></label>
+      <label class="task-item"><input type="checkbox" class="task-check" data-chk="c4" /><div class="task-content"><div class="task-meta"><span class="task-time">Feb / Mar 2027 (Annual)</span></div><div class="task-title">Ultrasound Whole Abdomen (KUB) & Retina Eye Check</div><div class="task-desc"><strong>Tests:</strong> USG Abdomen/Pelvis (KUB for silent stones + fatty liver) + Dilated Fundus Eye Exam.</div></div></label>
+      <label class="task-item"><input type="checkbox" class="task-check" data-chk="c5" /><div class="task-content"><div class="task-meta"><span class="task-time">Apr 6–10, 2027 (At 6 Months)</span></div><div class="task-title">6-Month HbA1c, Kidney & Urine Crystal Check</div><div class="task-desc"><strong>Tests:</strong> HbA1c, Fasting/PP Sugar, Urine R/E, Serum Creatinine & eGFR.</div></div></label>
+      <label class="task-item"><input type="checkbox" class="task-check" data-chk="c6" /><div class="task-content"><div class="task-meta"><span class="task-time">Oct 6, 2027 (At 12 Months)</span></div><div class="task-title">Annual Master Checkup + Vitamin B12 + Urine ACR</div><div class="task-desc"><strong>Tests:</strong> Swasthfit Super 4 + Vitamin B12 (annual check for Metformin) + Urine Microalbumin (ACR) + ECG.</div></div></label>
+    </div>
+  </section>
+
+  <!-- TAB 4: DIET & MEDICINES -->
+  <section id="tab-diet" class="tab-panel">
+    <div class="callout success">
+      <div class="callout-title">100% Grocery Utilization + Kidney Stone, Heart &amp; Diabetes Safety Protocol</div>
+      <div class="callout-body">
+        • <strong>How All 5 Seeds &amp; 2 Nuts Are Safely Utilized Every Day:</strong><br/>
+        &nbsp;&nbsp;1) <strong>7:15 AM:</strong> 5 soaked &amp; <em>peeled</em> Almonds (बादाम) + 3 soaked Walnuts (अखरोट) — peeling removes almond oxalates; walnuts lower 232 Triglycerides.<br/>
+        &nbsp;&nbsp;2) <strong>8:30 AM &amp; 7:30 PM:</strong> 1 tsp roasted ground Flaxseeds (अलसी) stirred into Breakfast Chaas/Dahi &amp; 1 tsp into Dinner Raita/Dal (= 8g/day = 250g/month).<br/>
+        &nbsp;&nbsp;3) <strong>11:15 AM:</strong> 1 tsp Chia Seeds (चिया बीज) soaked 20 mins in Lemon Water #1 (= 8g/day = 250g/month). Citrate in lemon + hydration keeps kidneys 100% stone-safe!<br/>
+        &nbsp;&nbsp;4) <strong>4:30 PM Evening:</strong> 1 level tbsp Mixed Seeds Jar (1 tsp Pumpkin + 1 tsp Sunflower + 1 tsp White Til = 15g/day = 450g/month) ALWAYS paired with 1 small cup of Chaas/Curd so dairy calcium binds oxalates in the stomach!<br/>
+        • <strong>Cooking Oil Budget (2 Liters/Month):</strong> Strictly <strong>1 tsp oil at Breakfast + 1.5 tsp at Lunch + 1 tsp at Dinner = 3.5 tsp/day</strong> (Rotate Mustard, Groundnut, Rice Bran, or Olive Oil).<br/>
+        • <strong>Prohance HP (2 tins / 800 g per month):</strong> Exactly 1 level scoop (12.5 g) at 8:30 AM in about 120 mL warm skimmed milk or water, and exactly 1 level scoop (12.5 g) at 9:30 PM in about 150 mL warm skimmed milk. Together that is the tin’s printed serving: 2 scoops = 25 g = 20.8 g protein, about 7.2 g carbohydrate, 0 added sugar. On Saturday the 9:30 PM scoop is stirred into the milk oats, so do not give a third scoop that night.
+      </div>
+    </div>
+
+    <div class="section-title">Complete 7-Day Meal-by-Meal Schedule (Utilizing All 28 Groceries)</div>
+    <div class="card table-wrap" style="padding:0;">
+      <table>
+        <thead>
+          <tr>
+            <th>Day</th>
+            <th>6:45 AM – 8:30 AM<br/>(Morning &amp; Breakfast)</th>
+            <th>11:15 AM Mid-Day<br/>(Fruit + Chia + Lemon)</th>
+            <th>1:30 PM Lunch<br/>(Salad First &rarr; Sabzi/Dal/Roti)</th>
+            <th>4:30 PM Evening<br/>(Rotating Snack + Seed Mix)</th>
+            <th>7:30 PM Dinner &amp; 9:30 PM<br/>(Light Dinner + Prohance HP)</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>Mon<br/>(सोमवार)</strong></td>
+            <td>• 6:45 AM: Soaked Methi + Cinnamon water + Rapeed D<br/>• 7:15 AM: 5 peeled Almonds + 3 Walnuts<br/>• 8:30 AM: <strong>2 Oats Idli</strong> + <strong>Toor Dal Sambar</strong> + Chaas (with <strong>1 tsp ground Alsi</strong>) + <strong>1 level scoop (12.5 g) Prohance HP</strong></td>
+            <td><strong>150g Guava (अमरूद)</strong> + Lemon Water #1 with <strong>1 tsp soaked Chia Seeds</strong></td>
+            <td>1 bowl Cucumber/Radish Salad + <strong>2 katori Karela Sabzi</strong> + <strong>1 katori Yellow Moong Dal</strong> + <strong>2 Chokar Wheat Rotis (with Ajwain)</strong> + 1 glass Chaas (1.5 tsp Mustard Oil)</td>
+            <td><strong>Chana Sattu Drink</strong> (2 heaped tbsp Sattu in Chaas/water with jeera) + <strong>1 tbsp Pumpkin, Sunflower &amp; Til Seed Mix</strong></td>
+            <td><strong>2 Split Green Moong Dal Chillas</strong> (stuffed with grated Lauki &amp; 30g Low-Fat Paneer) + Dahi Raita (with <strong>1 tsp ground Alsi</strong>) &rarr; <strong>1 level scoop (12.5 g) Prohance HP</strong> in warm Skimmed Milk at 9:30 PM</td>
+          </tr>
+          <tr>
+            <td><strong>Tue<br/>(मंगलवार)</strong></td>
+            <td>• Methi + Cinnamon water<br/>• 5 peeled Almonds + 3 Walnuts<br/>• 8:30 AM: <strong>1 bowl Thick Veg Poha</strong> (with peas, beans &amp; 2 tbsp <strong>steamed Sabut Moong sprouts</strong>) + Unsweetened Tea + <strong>1 level scoop (12.5 g) Prohance HP</strong> + <strong>1 tsp ground Alsi</strong></td>
+            <td><strong>150g Apple (सेब)</strong> + Lemon Water #1 with <strong>1 tsp soaked Chia Seeds</strong> + Tender Coconut Water</td>
+            <td>1 bowl Salad + <strong>2 katori Methi/Lauki Paneer</strong> (or blanched-and-drained Palak with <strong>60g Low-Fat Paneer</strong>) + <strong>1 katori Chana Dal</strong> + <strong>2 Chokar Wheat Rotis</strong> + Chaas</td>
+            <td><strong>1 bowl Roasted Phool Makhana</strong> (dry-roasted with black pepper &amp; turmeric) + Unsweetened Tea + <strong>1 tbsp Pumpkin, Sunflower &amp; Til Seeds</strong> + small cup Chaas</td>
+            <td><strong>2 Large Ragi/Oats/Dal Idlis</strong> + <strong>1 bowl Drumstick (Munga) Toor Dal Sambar</strong> + Chaas (with <strong>1 tsp ground Alsi</strong>) &rarr; <strong>1 level scoop (12.5 g) Prohance HP</strong> at 9:30 PM</td>
+          </tr>
+          <tr>
+            <td><strong>Wed<br/>(बुधवार)</strong></td>
+            <td>• Methi + Cinnamon water<br/>• 5 peeled Almonds + 3 Walnuts<br/>• 8:30 AM: <strong>2 Besan Chillas</strong> stuffed with <strong>50g grated Low-Fat Paneer</strong> &amp; veggies + Mint Chutney + Chaas (with <strong>1 tsp ground Alsi</strong>) + <strong>1 level scoop (12.5 g) Prohance HP</strong></td>
+            <td><strong>150g Papaya (पपीता)</strong> + Lemon Water #1 with <strong>1 tsp soaked Chia Seeds</strong></td>
+            <td>1 bowl Salad + <strong>2 katori Lauki Sabzi</strong> + <strong>1 katori Toor/Arhar Dal</strong> + <strong>1 Chokar Roti + 1 small katori Red/Brown Rice</strong> + Curd</td>
+            <td><strong>1 bowl Unsalted Bhuna Chana (Roasted Chana)</strong> + Unsweetened Tea + <strong>1 tbsp Pumpkin, Sunflower &amp; Til Seeds</strong> + small cup Chaas</td>
+            <td><strong>1 bowl Brown Rice &amp; Soya Chunks (Nutrela) Veg Tahri/Pulao</strong> (double veggies + 30g Soya Chunks) + Clear Veg Soup + Raita (with <strong>1 tsp ground Alsi</strong>) &rarr; <strong>1 level scoop (12.5 g) Prohance HP</strong> at 9:30 PM</td>
+          </tr>
+          <tr>
+            <td><strong>Thu<br/>(गुरुवार)</strong></td>
+            <td>• Methi + Cinnamon water<br/>• 5 peeled Almonds + 3 Walnuts<br/>• 8:30 AM: <strong>1 bowl Coarse Wheat/Millet Rava Veg Upma</strong> + <strong>1 tsp ground Alsi</strong> + <strong>1 level scoop (12.5 g) Prohance HP</strong> in Skimmed Milk</td>
+            <td><strong>150g Pear (नाशपाती) or Kiwi</strong> + Lemon Water #1 with <strong>1 tsp soaked Chia Seeds</strong> + Coconut Water</td>
+            <td>1 bowl Salad + <strong>1 katori Mix Veg (Cabbage/Cauliflower/Beans)</strong> + <strong>1 katori Methi/Lauki Moong Dal</strong> + <strong>2 Multigrain/Jowar/Bajra Rotis</strong> + Chaas</td>
+            <td><strong>1 bowl Murmura Bhel (बिना नमकीन)</strong> tossed with boiled Kala Chana, cucumber, deseeded tomato, lemon + <strong>1 tbsp Pumpkin, Sunflower &amp; Til Seeds</strong></td>
+            <td><strong>1 bowl Roasted Wheat/Ragi Vermicelli (सेवई)</strong> with veggies + <strong>50g Roasted Low-Fat Paneer (पनीर भुना)</strong> + <strong>Steamed Broccoli</strong> + Raita (with <strong>1 tsp Alsi</strong>) &rarr; <strong>1 level scoop (12.5 g) Prohance HP</strong> at 9:30 PM</td>
+          </tr>
+          <tr>
+            <td><strong>Fri<br/>(शुक्रवार)</strong></td>
+            <td>• Methi + Cinnamon water<br/>• 5 peeled Almonds + 3 Walnuts<br/>• 8:30 AM: <strong>1 bowl Steamed Sprouts (Sabut Green Moong + Kala Chana + Soybean Seeds)</strong> with lemon &amp; cucumber + <strong>1 tsp ground Alsi</strong> + <strong>1 level scoop (12.5 g) Prohance HP</strong></td>
+            <td><strong>1 Orange (संतरा) or Mosambi</strong> + Lemon Water #1 with <strong>1 tsp soaked Chia Seeds</strong></td>
+            <td>1 bowl Salad + <strong>2 katori Kala Chana &amp; Soya Chunks Sabzi (or Rajma)</strong> + <strong>1 Multigrain Roti + 1 small katori Red/Brown Rice</strong> + Chaas</td>
+            <td><strong>Chana Sattu Drink (2 tbsp Sattu)</strong> OR <strong>1 bowl Homemade Unsalted Popcorn (मक्का दाने)</strong> + Unsweetened Tea + <strong>1 tbsp Pumpkin, Sunflower &amp; Til Seeds</strong></td>
+            <td><strong>1.5 katori Thick Yellow &amp; Green Moong Dal</strong> + <strong>1 Multigrain/Chokar Roti</strong> + Salad + Dahi (with <strong>1 tsp Alsi</strong>) &rarr; <strong>1 level scoop (12.5 g) Prohance HP</strong> at 9:30 PM</td>
+          </tr>
+          <tr>
+            <td><strong>Sat<br/>(शनिवार)</strong></td>
+            <td>• Methi + Cinnamon water<br/>• 5 peeled Almonds + 3 Walnuts<br/>• 8:30 AM: <strong>1 bowl Savory Veg Broken Wheat (Daliya) Khichdi</strong> (with Split Green Moong Dal &amp; veggies) + Dahi (with <strong>1 tsp ground Alsi</strong>) + <strong>1 level scoop (12.5 g) Prohance HP</strong></td>
+            <td><strong>150g Guava or Plum (आलूबुखारा)</strong> + Lemon Water #1 with <strong>1 tsp soaked Chia Seeds</strong> + Coconut Water</td>
+            <td>1 bowl Salad + <strong>2 katori Taroee (Ridge Gourd) &amp; Munga (Drumstick) Sabzi</strong> + <strong>1 katori Chana + Toor Dal</strong> + <strong>2 Chokar Wheat Rotis</strong> + Raita</td>
+            <td><strong>1 bowl Roasted Makhana + Bhuna Chana Mix</strong> + Unsweetened Tea + <strong>1 tbsp Pumpkin, Sunflower &amp; Til Seeds</strong> + small cup Chaas</td>
+            <td><strong>1 large bowl Unsweetened Skimmed Milk + Rolled Oats (or Milk Daliya)</strong> cooked with pinch of Cinnamon, <strong>1 tsp ground Alsi</strong> &amp; <strong>1 level scoop (12.5 g) Prohance HP</strong> stirred in (this is the 9:30 PM scoop — do not give another scoop later)</td>
+          </tr>
+          <tr>
+            <td><strong>Sun<br/>(रविवार)</strong></td>
+            <td>• Methi + Cinnamon water<br/>• 5 peeled Almonds + 3 Walnuts<br/>• 8:30 AM: <strong>1 Crisp Moong Dal / Oats Dosa</strong> + <strong>Toor Dal Sambar</strong> (or 1 low-oil Methi/Gobhi Stuffed Chokar Paratha + Dahi) + <strong>1 tsp ground Alsi</strong> + <strong>1 level scoop (12.5 g) Prohance HP</strong></td>
+            <td><strong>150g Apple or Jamun/Papaya</strong> + Lemon Water #1 with <strong>1 tsp soaked Chia Seeds</strong></td>
+            <td>1 bowl Salad + <strong>2 katori Lobia (Black-Eyed Peas) / Rajma / Gwar Phali Beans Sabzi</strong> + <strong>2 Multigrain Rotis</strong> + Chaas + <strong>Weekly Vitamin D3 60,000 IU Syrup right after lunch!</strong></td>
+            <td><strong>Chana Sattu Drink (2 tbsp)</strong> OR <strong>1 bowl Murmura / Popcorn</strong> + Unsweetened Tea + <strong>1 tbsp Pumpkin, Sunflower &amp; Til Seeds</strong></td>
+            <td><strong>1 large bowl Split Green Moong Dal + Red/Brown Rice Kinki Veg Khichdi</strong> (2 parts dal &amp; veggies : 1 part rice) + Dahi (with <strong>1 tsp Alsi</strong>) &rarr; <strong>1 level scoop (12.5 g) Prohance HP</strong> at 9:30 PM</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- TAB 5: GROCERIES -->
+  <section id="tab-grocery" class="tab-panel">
+    <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;margin-bottom:8px;">
+      <div class="section-title" style="margin:0;" id="groceryCountTitle">1-Month Complete Grocery Checklist (28 Items)</div>
+      <div class="btn-row" style="margin-top:0;">
+        <button type="button" id="btnCheckAllGroc" style="padding:5px 10px;font-size:0.74rem;">Check All</button>
+        <button type="button" id="btnResetGroc" style="padding:5px 10px;font-size:0.74rem;">Reset List</button>
+      </div>
+    </div>
+    <div class="card" style="padding:0;" id="groceryListContainer">
+      <!-- 1-2. Supplements -->
+      <label class="task-item"><input type="checkbox" class="task-check" data-groc="g1" /><div class="task-content"><div class="task-meta"><span class="task-time">2 Tins (800 g)</span><span class="task-tag">Supplement</span></div><div class="task-title">1. Prohance HP Powder (400g tin) — प्रोहेंस एचपी पाउडर</div><div class="task-desc">Label serving is 2 scoops = 25 g = 20.8 g protein, 0 added sugar. Use 25 g every day (1 scoop of 12.5 g at 8:30 AM + 1 scoop of 12.5 g at 9:30 PM). 25 g × 30 days = 750 g. One 400 g tin is 16 servings (16 days). Two tins cover about 32 days.</div></div></label>
+      <label class="task-item"><input type="checkbox" class="task-check" data-groc="g28" /><div class="task-content"><div class="task-meta"><span class="task-time">5 More Bottles (Total 8)</span><span class="task-tag">Supplement</span></div><div class="task-title">2. Vitamin D3 60,000 IU Syrup (Sugar-Free) — विटामिन डी3 60k सिरप</div><div class="task-desc">Take immediately AFTER Sunday lunch (cap weekly course at 8 bottles total due to stone history)</div></div></label>
+
+      <!-- 3-9. Grains & Flours -->
+      <label class="task-item"><input type="checkbox" class="task-check" data-groc="g2" /><div class="task-content"><div class="task-meta"><span class="task-time">5 kg</span><span class="task-tag">Grains & Flours</span></div><div class="task-title">3. Whole Wheat Flour with Bran (Chokar Sahit Atta) — चोकर सहित गेहूं का आटा</div><div class="task-desc">Daily rotis with intact fiber (never sieve out the chokar/bran)</div></div></label>
+      <label class="task-item"><input type="checkbox" class="task-check" data-groc="g3" /><div class="task-content"><div class="task-meta"><span class="task-time">3 kg</span><span class="task-tag">Grains & Flours</span></div><div class="task-title">4. Multigrain / Ragi / Jowar / Bajra Flour — मल्टीग्रेन / रागी / ज्वार / बाजरा आटा</div><div class="task-desc">Low-GI rotis (Mon, Thu & daily rotation)</div></div></label>
+      <label class="task-item"><input type="checkbox" class="task-check" data-groc="g4" /><div class="task-content"><div class="task-meta"><span class="task-time">1.5 kg</span><span class="task-tag">Grains & Flours</span></div><div class="task-title">5. Rolled Oats / Steel-Cut Oats (Plain) — सादा ओट्स</div><div class="task-desc">Oats idli, porridge, and Saturday dinner milk oats (Mon, Sat)</div></div></label>
+      <label class="task-item"><input type="checkbox" class="task-check" data-groc="g5" /><div class="task-content"><div class="task-meta"><span class="task-time">1.5 kg</span><span class="task-tag">Grains & Flours</span></div><div class="task-title">6. Broken Wheat (Daliya) — गेहूं का दलिया</div><div class="task-desc">Vegetable daliya khichdi & unsweetened milk daliya (Saturday breakfast & dinner)</div></div></label>
+      <label class="task-item"><input type="checkbox" class="task-check" data-groc="g6" /><div class="task-content"><div class="task-meta"><span class="task-time">2 kg</span><span class="task-tag">Grains & Flours</span></div><div class="task-title">7. Brown / Red Rice or Broken Rice (Kinki) — लाल चावल / ब्राउन राइस / चावल की किनकी</div><div class="task-desc">Controlled 1 small katori lunch portion, Sunday khichdi & idli/dosa batter</div></div></label>
+      <label class="task-item"><input type="checkbox" class="task-check" data-groc="g7" /><div class="task-content"><div class="task-meta"><span class="task-time">500 g</span><span class="task-tag">Grains & Flours</span></div><div class="task-title">8. Flattened Rice (Thick Poha) — मोटा पोहा</div><div class="task-desc">Tuesday vegetable poha & roasted evening snack</div></div></label>
+      <label class="task-item"><input type="checkbox" class="task-check" data-groc="g8" /><div class="task-content"><div class="task-meta"><span class="task-time">500 g each</span><span class="task-tag">Grains & Flours</span></div><div class="task-title">9. Semolina / Rava (Wheat/Millet Rava) & Roasted Wheat/Ragi Vermicelli — सूजी और गेहूं/रागी सेवई</div><div class="task-desc">Thursday breakfast vegetable upma & Thursday dinner vegetable vermicelli</div></div></label>
+
+      <!-- 10-16. Pulses & Legumes -->
+      <label class="task-item"><input type="checkbox" class="task-check" data-groc="g9" /><div class="task-content"><div class="task-meta"><span class="task-time">2 kg (1 kg each)</span><span class="task-tag">Pulses & Legumes</span></div><div class="task-title">10. Yellow Moong Dal & Green Moong Split — मूंग दाल (धुली और छिलका)</div><div class="task-desc">Moong dal chilla (Mon dinner, Wed breakfast), khichdi (Sun dinner), daily dal</div></div></label>
+      <label class="task-item"><input type="checkbox" class="task-check" data-groc="g10" /><div class="task-content"><div class="task-meta"><span class="task-time">1 kg</span><span class="task-tag">Pulses & Legumes</span></div><div class="task-title">11. Whole Green Moong (Sabut Moong) — साबुत हरी मूंग</div><div class="task-desc">Friday morning steamed sprouts & chilla batter</div></div></label>
+      <label class="task-item"><input type="checkbox" class="task-check" data-groc="g11" /><div class="task-content"><div class="task-meta"><span class="task-time">1.5 kg</span><span class="task-tag">Pulses & Legumes</span></div><div class="task-title">12. Kala Chana (Black Chickpeas) — काला चना</div><div class="task-desc">Friday morning sprouts & Friday lunch kala chana sabzi</div></div></label>
+      <label class="task-item"><input type="checkbox" class="task-check" data-groc="g12" /><div class="task-content"><div class="task-meta"><span class="task-time">1 kg each</span><span class="task-tag">Pulses & Legumes</span></div><div class="task-title">13. Besan (Gram Flour) & Roasted Chana Sattu — बेसन और चना सत्तू</div><div class="task-desc">Wednesday besan chilla & daily 4:00-5:00 PM Evening Sattu drink</div></div></label>
+      <label class="task-item"><input type="checkbox" class="task-check" data-groc="g13" /><div class="task-content"><div class="task-meta"><span class="task-time">1.5 kg total</span><span class="task-tag">Pulses & Legumes</span></div><div class="task-title">14. Toor (Arhar) Dal & Chana Dal — तूर दाल (1 kg) और चना दाल (500 g)</div><div class="task-desc">Daily lunch/dinner dal & vegetable sambar</div></div></label>
+      <label class="task-item"><input type="checkbox" class="task-check" data-groc="g14" /><div class="task-content"><div class="task-meta"><span class="task-time">500 g each</span><span class="task-tag">Pulses & Legumes</span></div><div class="task-title">15. Rajma (Kidney Beans) & Lobia (Black-Eyed Peas) — राजमा और लोबिया</div><div class="task-desc">Friday & Sunday high-protein bean lunches</div></div></label>
+      <label class="task-item"><input type="checkbox" class="task-check" data-groc="g15" /><div class="task-content"><div class="task-meta"><span class="task-time">500 g each</span><span class="task-tag">Pulses & Legumes</span></div><div class="task-title">16. Soybean Seeds & Soya Chunks (Nutrela) — सोयाबीन दाने और सोया बड़ी</div><div class="task-desc">Friday sprouts/sabzi & Wednesday vegetable tahri/pulao</div></div></label>
+
+      <!-- 17-22. Nuts, Seeds & Evening Snacks -->
+      <label class="task-item"><input type="checkbox" class="task-check" data-groc="g16" /><div class="task-content"><div class="task-meta"><span class="task-time">500 g</span><span class="task-tag">Nuts & Seeds</span></div><div class="task-title">17. Almonds (Badam) — बादाम</div><div class="task-desc">4-5 soaked & peeled almonds every morning (peeling reduces oxalates)</div></div></label>
+      <label class="task-item"><input type="checkbox" class="task-check" data-groc="g17" /><div class="task-content"><div class="task-meta"><span class="task-time">400 g</span><span class="task-tag">Nuts & Seeds</span></div><div class="task-title">18. Walnuts (Akhrot Kernels) — अखरोट गिरी</div><div class="task-desc">2-3 soaked walnuts every morning (natural Omega-3 to lower 232 triglycerides)</div></div></label>
+      <label class="task-item"><input type="checkbox" class="task-check" data-groc="g18" /><div class="task-content"><div class="task-meta"><span class="task-time">250 g each</span><span class="task-tag">Nuts & Seeds</span></div><div class="task-title">19. Flaxseeds (Alsi) & Chia Seeds — अलसी के बीज और चिया सीड्स</div><div class="task-desc">1 tbsp lightly roasted ground Alsi daily for Omega-3 & soluble fiber (replaces fish oil)</div></div></label>
+      <label class="task-item"><input type="checkbox" class="task-check" data-groc="g19" /><div class="task-content"><div class="task-meta"><span class="task-time">200 g each</span><span class="task-tag">Nuts & Seeds</span></div><div class="task-title">20. Pumpkin Seeds, Sunflower Seeds & White Sesame (Til) — कद्दू, सूरजमुखी और तिल के बीज</div><div class="task-desc">Thursday breakfast & 4:00-5:00 PM evening mixed seed jar</div></div></label>
+      <label class="task-item"><input type="checkbox" class="task-check" data-groc="g20" /><div class="task-content"><div class="task-meta"><span class="task-time">500 g each</span><span class="task-tag">Nuts & Seeds</span></div><div class="task-title">21. Foxnuts (Phool Makhana) & Roasted Chana (Unsalted) — मखाना और भुना चना (बिना नमक)</div><div class="task-desc">4:00-5:00 PM evening tea-time high-protein snacks</div></div></label>
+      <label class="task-item"><input type="checkbox" class="task-check" data-groc="g21" /><div class="task-content"><div class="task-meta"><span class="task-time">400 g each</span><span class="task-tag">Nuts & Seeds</span></div><div class="task-title">22. Puffed Rice (Murmura) & Corn Kernels (for Popcorn) — मुरमुरा और मक्का दाने</div><div class="task-desc">Light evening bhel/snacks without namkeen or oil</div></div></label>
+
+      <!-- 23-24. Cooking Oils & Condiments (Restored!) -->
+      <label class="task-item"><input type="checkbox" class="task-check" data-groc="g22" /><div class="task-content"><div class="task-meta"><span class="task-time">2 Liters</span><span class="task-tag">Cooking Oils & Condiments</span></div><div class="task-title">23. Mustard / Groundnut / Rice Bran / Sunflower / Olive Oil — सरसों / मूंगफली / राइस ब्रान / सूरजमुखी तेल</div><div class="task-desc">Strict limit &lt;3-4 tsp/day total across all meals (avoid Dalda, Vanaspati, Coconut/Palm oil, Butter & excess Ghee)</div></div></label>
+      <label class="task-item"><input type="checkbox" class="task-check" data-groc="g23" /><div class="task-content"><div class="task-meta"><span class="task-time">100 g each</span><span class="task-tag">Cooking Oils & Condiments</span></div><div class="task-title">24. Fenugreek Seeds (Methi Dana), Cinnamon (Dalchini) & Ajwain — मेथी दाना, दालचीनी, अजवाइन</div><div class="task-desc">1 tsp overnight-soaked Methi Dana every morning at 6:45 AM for glycemic control</div></div></label>
+
+      <!-- 25-26. Weekly Fresh Dairy -->
+      <label class="task-item"><input type="checkbox" class="task-check" data-groc="g24" /><div class="task-content"><div class="task-meta"><span class="task-time">1 L / day (~30 L/mo)</span><span class="task-tag">Weekly Fresh Dairy</span></div><div class="task-title">25. Skimmed / Double-Toned Milk (No Malai) — बिना मलाई का दूध (टोंड)</div><div class="task-desc">Boil, cool & remove all malai before making Curd (Dahi), Chaas/Mattha, Raita, Low-fat Paneer, or Prohance HP</div></div></label>
+      <label class="task-item"><input type="checkbox" class="task-check" data-groc="g25" /><div class="task-content"><div class="task-meta"><span class="task-time">250-300 g / week</span><span class="task-tag">Weekly Fresh Dairy</span></div><div class="task-title">26. Low-Fat Paneer / Tofu (Homemade from Skimmed Milk) — कम वसा वाला पनीर / टोफू</div><div class="task-desc">Methi/Lauki/Palak paneer (Tue lunch), stuffed chilla (Wed breakfast), 50g roasted paneer (Thu dinner)</div></div></label>
+
+      <!-- 27-28. Weekly Fresh Produce -->
+      <label class="task-item"><input type="checkbox" class="task-check" data-groc="g26" /><div class="task-content"><div class="task-meta"><span class="task-time">4-5 kg / week</span><span class="task-tag">Weekly Fresh Produce</span></div><div class="task-title">27. Low-GI & Stone-Safe Vegetables — करेला, लौकी, मेथी, तरोई, मुरंगा, बीन्स, ब्रोकली, पत्ता/फूल गोभी, खीरा, मूली</div><div class="task-desc">2 bowls sabzi + 1 bowl raw salad every lunch & dinner (blanch palak & avoid potato/beetroot/arbi)</div></div></label>
+      <label class="task-item"><input type="checkbox" class="task-check" data-groc="g27" /><div class="task-content"><div class="task-meta"><span class="task-time">1.5-2 kg/wk + 15 Lemons/wk</span><span class="task-tag">Weekly Fresh Produce</span></div><div class="task-title">28. Low-GI Whole Fruits + Daily Lemons & Coconut Water — अमरूद, सेब, पपीता, नाशपाती, संतरा, मौसमी, कीवी, जामुन + रोज़ 2 नींबू</div><div class="task-desc">11 AM Mid-Day whole fruit (100-150g) + 2 Lemons/day in water (Citrate prevents kidney stone recurrence!)</div></div></label>
+    </div>
+  </section>
+
+</div>
+
+<!-- Pure CSS Bottom Navigation Labels -->
+<nav class="bottom-nav">
+  <label for="rad-daily" class="nav-label"><span>1. Daily</span></label>
+  <label for="rad-reports" class="nav-label"><span>2. Reports/AI</span></label>
+  <label for="rad-schedule" class="nav-label"><span>3. Reminders</span></label>
+  <label for="rad-diet" class="nav-label"><span>4. Diet Chart</span></label>
+  <label for="rad-grocery" class="nav-label"><span>5. Groceries</span></label>
+</nav>
+
+<script src="./app.js"></script>
+<script>
+  if ("serviceWorker" in navigator) {
+    window.addEventListener("load", function () {
+      navigator.serviceWorker
+        .register("./service-worker.js", { scope: "./" })
+        .then(function (registration) {
+          console.log("Service Worker Registered Successfully", registration.scope);
+        })
+        .catch(function (error) {
+          console.error("Service Worker Registration Error:", error);
+        });
+    });
+  }
+</script>
+</body>
+</html>
