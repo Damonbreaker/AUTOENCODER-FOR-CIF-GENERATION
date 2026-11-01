@@ -48,6 +48,37 @@ VERTICAL_IMAGES = [
     "1793546112583.png",
 ]
 
+LANDSCAPE_WEIGHTS = [
+    1.25,
+    1.0,
+    0.95,
+    0.95,
+    0.9,
+    1.05,
+    0.9,
+    1.0,
+    1.0,
+    0.9,
+    0.95,
+    0.75,
+    0.95,
+    1.0,
+    1.0,
+    0.95,
+    1.05,
+    1.05,
+]
+
+VERTICAL_WEIGHTS = [
+    1.25,
+    1.0,
+    1.0,
+    1.0,
+    0.9,
+    0.9,
+    1.1,
+]
+
 
 def run(cmd: list[str]) -> None:
     print("+", " ".join(cmd))
@@ -181,14 +212,27 @@ def mux_audio(video: Path, audio: Path, output: Path) -> None:
     )
 
 
-def render_video(audio: Path, images: list[Path], output: Path, width: int, height: int, mode: str) -> None:
+def scaled_durations(total_duration: float, weights: list[float]) -> list[float]:
+    weight_sum = sum(weights)
+    durations = [total_duration * w / weight_sum for w in weights]
+    durations[-1] += max(0.0, total_duration - sum(durations))
+    return durations
+
+
+def render_video(
+    audio: Path,
+    images: list[Path],
+    weights: list[float],
+    output: Path,
+    width: int,
+    height: int,
+    mode: str,
+) -> None:
     duration = probe_duration(audio)
     clips_dir = MEDIA_DIR / f"{output.stem}_clips"
     clips_dir.mkdir(parents=True, exist_ok=True)
-    base_duration = duration / len(images)
     clips: list[Path] = []
-    durations: list[float] = [base_duration] * len(images)
-    durations[-1] += max(0.0, duration - sum(durations))
+    durations = scaled_durations(duration, weights)
 
     for idx, (image, clip_duration) in enumerate(zip(images, durations), start=1):
         clip = clips_dir / f"{idx:02d}.mp4"
@@ -299,11 +343,10 @@ def main() -> None:
     OUT_DIR.mkdir(parents=True, exist_ok=True)
     THUMB_DIR.mkdir(parents=True, exist_ok=True)
 
-    hindi_long_parts = sorted(
-        [p for p in HINDI_DIR.glob("*.mp3") if probe_duration(p) > 100],
-        key=probe_duration,
-        reverse=True,
-    )
+    hindi_long_parts = [
+        HINDI_DIR / "gemini_music (5).mp3",
+        HINDI_DIR / "gemini_music (4).mp3",
+    ]
     hindi_reel = min([p for p in HINDI_DIR.glob("*.mp3")], key=probe_duration)
 
     english_part1 = ENGLISH_DIR / "the_question_of_shaunaka.mp3"
@@ -321,6 +364,7 @@ def main() -> None:
     render_video(
         hindi_full_audio,
         landscape_paths,
+        LANDSCAPE_WEIGHTS,
         OUT_DIR / "shiv-puran-episode1-hindi-youtube-final.mp4",
         1920,
         1080,
@@ -329,6 +373,7 @@ def main() -> None:
     render_video(
         english_full_audio,
         landscape_paths,
+        LANDSCAPE_WEIGHTS,
         OUT_DIR / "shiv-puran-episode1-english-youtube-final.mp4",
         1920,
         1080,
@@ -337,6 +382,7 @@ def main() -> None:
     render_video(
         hindi_reel,
         vertical_paths,
+        VERTICAL_WEIGHTS,
         OUT_DIR / "shiv-puran-episode1-hindi-reel-final.mp4",
         1080,
         1920,
@@ -345,6 +391,7 @@ def main() -> None:
     render_video(
         english_reel,
         vertical_paths,
+        VERTICAL_WEIGHTS,
         OUT_DIR / "shiv-puran-episode1-english-reel-final.mp4",
         1080,
         1920,
