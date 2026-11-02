@@ -356,8 +356,8 @@ def main() -> None:
     english_part2 = trimmed / "english-part2.mp3"
     english_reel = trimmed / "english-reel.mp3"
 
-    trim_audio(HINDI_DIR / "the_awakening_at_gokarna.mp3", hindi_part1)
-    trim_audio(HINDI_DIR / "ash_and_rudraksha.mp3", hindi_part2)
+    trim_audio(HINDI_DIR / "ash_and_rudraksha.mp3", hindi_part1)
+    trim_audio(HINDI_DIR / "the_awakening_at_gokarna.mp3", hindi_part2)
     trim_audio(HINDI_DIR / "the_brahmana_of_bashkala.mp3", hindi_reel)
     trim_audio(ASSET_DIR / "gemini_music (10).mp3", english_part1)
     trim_audio(ASSET_DIR / "gemini_music (9).mp3", english_part2)
