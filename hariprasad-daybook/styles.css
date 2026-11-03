@@ -1,24 +1,24 @@
 :root {
-  --paper: #f4f0e6;
-  --card: #fffdf8;
-  --ink: #1c1915;
-  --muted: #5e584e;
-  --line: #e2d9c8;
-  --navy: #143d66;
-  --navy-2: #0e2c4a;
-  --gold: #8a5a12;
-  --gold-bg: #f8eccf;
-  --green: #1d6b45;
-  --green-bg: #e5f4eb;
+  --paper: #f2f8f3;
+  --card: #ffffff;
+  --ink: #1a2e22;
+  --muted: #4d6456;
+  --line: #d3e6d8;
+  --navy: #1f7a4d;
+  --navy-2: #145c38;
+  --gold: #2f6b45;
+  --gold-bg: #e5f6ea;
+  --green: #1f7a4d;
+  --green-bg: #e5f6ea;
   --red: #8d2d2d;
-  --shadow: 0 8px 24px rgba(28, 25, 21, 0.06);
+  --shadow: 0 8px 24px rgba(31, 122, 77, 0.08);
   --safe-bottom: env(safe-area-inset-bottom, 0px);
 }
 
 * { box-sizing: border-box; }
 html, body { margin: 0; padding: 0; }
 body {
-  font-family: "Iowan Old Style", "Palatino Linotype", Palatino, Georgia, serif;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
   background: var(--paper);
   color: var(--ink);
   line-height: 1.45;
@@ -36,7 +36,8 @@ header {
 }
 .brand { display: flex; justify-content: space-between; gap: 12px; align-items: center; }
 h1 { font-size: 1.45rem; line-height: 1; margin: 0 0 4px; font-weight: 700; letter-spacing: -0.02em; }
-.who { margin: 0; font-size: 0.92rem; color: #d5e4f2; }
+.who { margin: 0; font-size: 0.92rem; color: #e7f6ec; }
+.brand-actions { display: flex; gap: 6px; align-items: center; }
 .ghost {
   background: transparent;
   color: #f7f3ea;
@@ -71,7 +72,7 @@ h1 { font-size: 1.45rem; line-height: 1; margin: 0 0 4px; font-weight: 700; lett
 .week button strong, .cal button strong { display: block; font-size: 0.95rem; }
 .week button span, .cal .dow { display: block; font-size: 0.68rem; letter-spacing: 0.04em; text-transform: uppercase; color: var(--muted); }
 .week button.on, .cal button.on { background: var(--navy); color: white; }
-.week button.on span { color: #d5e4f2; }
+.week button.on span { color: #e7f6ec; }
 .week button.has::after, .cal button.has::after {
   content: "";
   display: block;
@@ -104,8 +105,8 @@ h1 { font-size: 1.45rem; line-height: 1; margin: 0 0 4px; font-weight: 700; lett
 .done .title { text-decoration: line-through; color: var(--muted); }
 
 .banner {
-  background: var(--gold-bg);
-  border: 1px solid #e4cd93;
+  background: #e5f6ea;
+  border: 1px solid #b7dec4;
   border-radius: 16px;
   padding: 12px;
   margin-bottom: 12px;
@@ -157,7 +158,7 @@ dialog::backdrop { background: rgba(20, 30, 40, 0.45); }
 .code { font-size: 0.78rem; letter-spacing: 0.04em; color: var(--gold); font-weight: 700; }
 .kicker { font-size: 0.75rem; letter-spacing: 0.08em; text-transform: uppercase; color: var(--gold); margin: 0 0 4px; }
 .stats { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
-.stat { background: #f7f4ec; border-radius: 12px; padding: 10px; }
+.stat { background: #f3faf5; border-radius: 12px; padding: 10px; }
 .stat b { display: block; font-size: 1.05rem; }
 nav {
   position: fixed;
@@ -165,7 +166,7 @@ nav {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
   gap: 4px;
-  background: #fffdf8;
+  background: #ffffff;
   border-top: 1px solid var(--line);
   padding: 6px 8px calc(8px + var(--safe-bottom));
 }
@@ -177,7 +178,9 @@ nav button {
   padding: 8px 2px;
   font-size: 0.78rem;
 }
-nav button.active { background: #e7eef6; color: var(--navy); font-weight: 700; }
+nav button.active { background: #e5f6ea; color: var(--navy); font-weight: 700; }
+ol.steps { margin: 8px 0 0; padding-left: 18px; }
+ol.steps li { margin: 6px 0; }
 .tiny { font-size: 0.82rem; color: var(--muted); }
 ul.plain { margin: 8px 0 0; padding-left: 18px; }
 ul.plain li { margin: 4px 0; }

@@ -225,7 +225,7 @@
     var installed = window.matchMedia("(display-mode: standalone)").matches || window.navigator.standalone;
     var install = installed
       ? ""
-      : '<div class="card"><h2>Put Daybook on the iPhone</h2><p class="muted">Open this page in Safari, tap Share, then Add to Home Screen. Open it from the new icon and tap Allow alerts. For a ring while the phone is locked, use iPhone alarm on the commitment and add the Calendar event.</p></div>';
+      : '<div class="card"><h2>Install Daybook</h2><p class="muted">Android adds it to the app list. iPhone adds it from Safari’s share sheet. Either way it opens from its own icon.</p><button class="solid full" type="button" id="install-card">Install</button></div>';
     var lab = L.labCardState(state.labs, iso);
     var labHtml = "";
     if (lab.kind === "unbooked" || lab.nudge) {
@@ -239,9 +239,11 @@
       banner +
       '<div class="week">' + week + "</div>" +
       '<div class="card"><p class="kicker">' + escapeHtml(longDate(iso)) + "</p><h2>Commitments</h2>" +
+      '<p class="muted">More than one commitment can sit on this day. They stay in time order.</p>' +
       (commits.length ? commits.map(function (item) { return commitRow(item, iso); }).join("") : '<p class="muted">Nothing fixed today.</p>') +
-      '<button class="solid full" type="button" id="add-today" style="margin-top:8px">Add a commitment</button></div>' +
-      '<div class="card"><h2>Diet checklist</h2><p class="muted">College hours 10 am to 7 pm. Tick each plate as it happens.</p>' +
+      '<button class="solid full" type="button" id="add-today" style="margin-top:8px">' +
+      (commits.length ? "Add another today" : "Add a commitment") + "</button></div>" +
+      '<div class="card"><h2>Vegetarian day</h2><p class="muted">College hours 10 am to 7 pm. Tick each plate as it happens.</p>' +
       dietBox(iso) + "</div>" + labHtml;
   }
 
@@ -265,8 +267,10 @@
       escapeHtml(monthLabel(cursor)) + '</h2><button class="quiet" type="button" id="next-month">Next</button></div><div class="cal">' +
       cells + "</div></div>" +
       '<div class="card"><p class="kicker">' + escapeHtml(longDate(selected)) + '</p><h2>That day</h2>' +
+      '<p class="muted">Add as many as the day needs. Each keeps its own time and reminder.</p>' +
       (list.length ? list.map(function (item) { return commitRow(item, selected); }).join("") : '<p class="muted">No commitment on this date.</p>') +
-      '<button class="solid full" type="button" id="add-day" style="margin-top:8px">Add on this date</button></div>' +
+      '<button class="solid full" type="button" id="add-day" style="margin-top:8px">' +
+      (list.length ? "Add another on this date" : "Add on this date") + "</button></div>" +
       '<div class="card"><h2>Notepad</h2><p class="muted">A private note for this date. It stays on this phone.</p>' +
       '<textarea id="day-note" data-note="' + selected + '">' + escapeHtml(state.notes[selected] || "") + "</textarea></div>";
   }
@@ -274,20 +278,36 @@
   function renderDiet() {
     var bmi = L.bmi(L.PROFILE.weightKg, L.PROFILE.heightCm);
     document.getElementById("diet").innerHTML =
-      '<div class="card"><p class="kicker">' + escapeHtml(L.PROFILE.role) + "</p><h2>A day that fits 10 to 7</h2>" +
+      '<div class="card"><p class="kicker">Fully vegetarian</p><h2>A college day, 10 to 7</h2>' +
       '<div class="stats"><div class="stat"><span class="tiny">Height</span><b>' + L.PROFILE.heightIn +
       '</b></div><div class="stat"><span class="tiny">Weight</span><b>' + L.PROFILE.weightKg +
       ' kg</b></div><div class="stat"><span class="tiny">Age</span><b>' + L.PROFILE.ageLabel +
       '</b></div><div class="stat"><span class="tiny">BMI</span><b>' + bmi + "</b></div></div>" +
-      '<p class="muted" style="margin-top:10px">At about 5\'8" and 90 kg, the plate stays measured. No calorie app, no special cooking at college.</p></div>' +
-      '<div class="card"><h2>How to eat it</h2><ul class="plain">' +
-      "<li>Breakfast at home, before 9:40.</li>" +
-      "<li>Lunch at 1:15. Pack it, or ask the canteen for 2 rotis, dal, sabzi, salad, and curd.</li>" +
-      "<li>Skip fried snacks, juice, and sweet drinks on a college day.</li>" +
-      "<li>Keep roasted chana, unsalted nuts, and a fruit in the office drawer for 4:30.</li>" +
-      "<li>Dinner after reaching home, same plate, finished by 9, then a 20-minute walk.</li>" +
+      '<p class="muted" style="margin-top:10px">At about 5\'8" and 90 kg, portions stay measured. The food is vegetarian, packed in a steel box, and built around dal, curd, seasonal sabzi, and a reused bottle.</p></div>' +
+      '<div class="card"><h2>Breakfast, 8:15, at home</h2><p>Pick one. Tea or coffee has no sugar. Add one fruit.</p><ul class="plain">' +
+      "<li>1 katori vegetable poha with a spoon of peanuts, plus a small bowl of curd.</li>" +
+      "<li>2 moong chillas with mint chutney and a bowl of curd.</li>" +
+      "<li>2 small rotis filled with 80 g paneer or grated cabbage, plus curd.</li>" +
       "</ul></div>" +
-      '<div class="card"><h2>Supplements</h2><p class="muted">None are mandatory while he is well. After the Lal PathLabs report, vitamin D only if that result is low, at a dose his doctor writes. Protein powder is unnecessary when lunch and dinner include dal and curd or eggs.</p></div>' +
+      '<div class="card"><h2>Lunch, 1:15</h2><p>Pack a steel tiffin, or say this at the canteen: 2 phulkas, no ghee, one bowl of dal, one bowl of seasonal sabzi, salad, and curd.</p><ul class="plain">' +
+      "<li>Rajma or chole can be the dal that day. It does not come with a second bowl of rice.</li>" +
+      "<li>Rice, when it is on the plate, is 1 small katori, and the rotis drop from 2 to 1.</li>" +
+      "<li>Leave samosa, bread pakora, patty, naan, sweet lassi, packaged juice, and a daily paneer-butter masala.</li>" +
+      "</ul></div>" +
+      '<div class="card"><h2>4:30, from the drawer</h2><ul class="plain">' +
+      "<li>30 g roasted chana, or a small handful of unsalted peanuts with murmura.</li>" +
+      "<li>One fruit: guava, apple, pear, or banana.</li>" +
+      "<li>Tea without sugar.</li>" +
+      "<li>On Sunday, pack five days of chana, peanuts, and fruit into the office drawer.</li>" +
+      "</ul></div>" +
+      '<div class="card"><h2>Dinner, 8:15, finished by 9</h2><ul class="plain">' +
+      "<li>2 rotis, or 1 small bowl of jowar, bajra, or rice.</li>" +
+      "<li>1 bowl dal, 1 bowl sabzi, salad.</li>" +
+      "<li>Paneer, 80–100 g, can stand in for dal at dinner or at lunch, not at both.</li>" +
+      "<li>A sweet at a function can be one small piece. Skip the next day’s drawer snack if that happens.</li>" +
+      "<li>Then walk for 20 minutes.</li>" +
+      '</ul><p class="muted">Dal at the meals, curd every day, and paneer a few days a week cover protein without a powder.</p></div>' +
+      '<div class="card"><h2>Supplements</h2><p class="muted">None to start while he is well. The yearly blood test includes vitamin B12 and vitamin D. A fully vegetarian diet can run low on B12, so those two are taken only if the report is low, at the dose a doctor writes.</p></div>' +
       '<div class="card"><h2>Today’s ticks</h2>' + dietBox(todayISO()) + "</div>";
   }
 
@@ -349,6 +369,7 @@
       render();
     }
     if (target.id === "add-today" || target.id === "add-day") openForm(null);
+    if (target.id === "install-card") openInstall();
     if (target.id === "prev-month") {
       cursor = new Date(cursor.getFullYear(), cursor.getMonth() - 1, 1);
       render();
@@ -445,6 +466,62 @@
     setTab("diary");
     if (isNew) downloadIcs(data);
   });
+
+  var deferredPrompt = null;
+
+  function standaloneMode() {
+    return window.matchMedia("(display-mode: standalone)").matches || window.navigator.standalone === true;
+  }
+
+  function openInstall() {
+    if (standaloneMode()) return;
+    var ios = /iphone|ipad|ipod/i.test(window.navigator.userAgent);
+    document.getElementById("install-ios").hidden = !ios;
+    document.getElementById("install-android").hidden = ios;
+    document.getElementById("install-now").hidden = ios || !deferredPrompt;
+    document.getElementById("install-sheet").showModal();
+  }
+
+  window.addEventListener("beforeinstallprompt", function (event) {
+    event.preventDefault();
+    deferredPrompt = event;
+    document.getElementById("install-btn").textContent = "Install";
+  });
+
+  window.addEventListener("appinstalled", function () {
+    deferredPrompt = null;
+    document.getElementById("install-btn").textContent = "Installed";
+  });
+
+  document.getElementById("install-btn").addEventListener("click", function () {
+    if (standaloneMode()) return;
+    if (deferredPrompt) {
+      deferredPrompt.prompt();
+      deferredPrompt.userChoice.then(function (choice) {
+        deferredPrompt = null;
+        if (choice.outcome === "accepted") {
+          document.getElementById("install-btn").textContent = "Installed";
+        }
+      });
+      return;
+    }
+    openInstall();
+  });
+
+  document.getElementById("install-now").addEventListener("click", function () {
+    if (!deferredPrompt) return;
+    deferredPrompt.prompt();
+    deferredPrompt.userChoice.then(function () {
+      deferredPrompt = null;
+      document.getElementById("install-sheet").close();
+    });
+  });
+
+  document.getElementById("close-install").addEventListener("click", function () {
+    document.getElementById("install-sheet").close();
+  });
+
+  if (standaloneMode()) document.getElementById("install-btn").textContent = "Installed";
 
   document.getElementById("notify-btn").addEventListener("click", function () {
     if (!("Notification" in window)) {

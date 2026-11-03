@@ -234,44 +234,44 @@
     {
       id: "breakfast",
       time: "08:15",
-      title: "Breakfast before leaving",
-      detail: "2 eggs or 100 g paneer, one fruit, tea or coffee without sugar."
+      title: "Vegetarian breakfast",
+      detail: "One of these: 1 katori vegetable poha with peanuts, or 2 moong chillas, or 2 small rotis with paneer or cabbage. Add a bowl of curd and one fruit. Tea or coffee, no sugar."
     },
     {
       id: "bottle",
       time: "09:40",
-      title: "Fill a 1 litre bottle",
-      detail: "Carry it into college. Water only, through the morning."
+      title: "Refill the steel bottle",
+      detail: "1 litre of water in a bottle he will use again. Carry it instead of buying a bottle."
     },
     {
       id: "lunch",
       time: "13:15",
-      title: "Lunch plate",
-      detail: "2 rotis or one small bowl of rice, dal, sabzi, salad, and curd."
+      title: "Vegetarian lunch",
+      detail: "2 phulkas without ghee, 1 bowl dal or rajma or chole, 1 bowl seasonal sabzi, a large salad, 1 bowl curd. If the plate has rice, keep it to 1 small katori and take only 1 roti."
     },
     {
       id: "snack",
       time: "16:30",
       title: "Drawer snack",
-      detail: "Roasted chana or a small handful of unsalted nuts, plus a fruit. Tea without sugar."
+      detail: "30 g roasted chana, or a small handful of unsalted peanuts with murmura, plus one fruit. Tea without sugar."
     },
     {
       id: "water2",
       time: "18:30",
       title: "Second litre finished",
-      detail: "Refill once during the afternoon and finish it before 7 pm."
+      detail: "Refill the same bottle after lunch and finish it before leaving college."
     },
     {
       id: "dinner",
       time: "20:15",
-      title: "Dinner, finished by 9",
-      detail: "Same plate as lunch. Keep rice to one small bowl."
+      title: "Vegetarian dinner by 9",
+      detail: "2 rotis, or 1 small bowl of millet or rice, plus dal, sabzi, and salad. Paneer 80–100 g can replace dal at one meal, not at both. No second dinner."
     },
     {
       id: "walk",
       time: "21:00",
       title: "20-minute walk",
-      detail: "After dinner. A corridor loop between meetings counts only for the afternoon, not for this."
+      detail: "After dinner. A short walk between meetings does not replace this one."
     }
   ];
 

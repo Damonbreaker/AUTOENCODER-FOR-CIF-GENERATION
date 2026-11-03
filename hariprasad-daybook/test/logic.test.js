@@ -2,6 +2,14 @@ const test = require("node:test");
 const assert = require("node:assert/strict");
 const L = require("../logic.js");
 
+test("two commitments on one date are both kept", function () {
+  const morning = { date: "2026-11-10", repeat: "once", time: "09:00" };
+  const evening = { date: "2026-11-10", repeat: "once", time: "18:30" };
+  assert.equal(L.occursOn(morning, "2026-11-10"), true);
+  assert.equal(L.occursOn(evening, "2026-11-10"), true);
+  assert.equal(L.occursOn(evening, "2026-11-11"), false);
+});
+
 test("bmi at 173 cm and 90 kg is about 30", function () {
   assert.equal(L.bmi(90, 173), 30.1);
 });

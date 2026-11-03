@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-  <meta name="theme-color" content="#143d66" />
+  <meta name="theme-color" content="#1f7a4d" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
@@ -21,7 +21,10 @@
         <h1>Daybook</h1>
         <p class="who">Dr. Hariprasad Kodamana</p>
       </div>
-      <button class="ghost" id="notify-btn" type="button">Allow alerts</button>
+      <div class="brand-actions">
+        <button class="ghost" id="install-btn" type="button">Install</button>
+        <button class="ghost" id="notify-btn" type="button">Alerts</button>
+      </div>
     </div>
   </header>
   <main class="wrap">
@@ -36,6 +39,31 @@
     <button type="button" data-tab="diet">Diet</button>
     <button type="button" data-tab="labs">Labs</button>
   </nav>
+  <dialog id="install-sheet">
+    <p class="kicker">Download</p>
+    <h2>Install Daybook</h2>
+    <div id="install-android">
+      <p>On Android, Install places Daybook in the app list, beside the other apps. It opens full screen from its own icon.</p>
+      <ol class="steps">
+        <li>Tap Install now. If the phone asks, confirm Install.</li>
+        <li>If that button is quiet, open the Chrome menu and tap Install app, or Add to Home screen.</li>
+        <li>Open Daybook from the new icon, then tap Alerts.</li>
+      </ol>
+      <button class="solid" type="button" id="install-now">Install now</button>
+    </div>
+    <div id="install-ios">
+      <p>On iPhone, Apple installs this from Safari’s share sheet. After that it opens full screen from the home screen icon, without the Safari bar.</p>
+      <ol class="steps">
+        <li>Open this page in Safari.</li>
+        <li>Tap the Share button.</li>
+        <li>Tap Add to Home Screen, then Add.</li>
+        <li>Open the Daybook icon and tap Alerts.</li>
+      </ol>
+    </div>
+    <div class="row" style="margin-top:14px">
+      <button class="quiet" type="button" id="close-install">Close</button>
+    </div>
+  </dialog>
   <dialog id="sheet">
     <form id="commit-form">
       <p class="kicker" id="form-kicker">New commitment</p>
