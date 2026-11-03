@@ -64,6 +64,38 @@ test("three nags produce three calendar alarms", function () {
   assert.match(ics, /TRIGGER:-PT30M/);
 });
 
+test("default measures keep BMI 30.1 and Monday portions at the written grams", function () {
+  const m = L.measures({ feet: 5, inches: 8, weightKg: 90, age: 46 });
+  assert.equal(m.heightCm, 173);
+  assert.equal(m.bmi, 30.1);
+  assert.equal(m.factor, 1);
+  const monday = L.menuFor("2026-11-02", m);
+  assert.match(monday[0].detail, /15 g peanuts/);
+  assert.match(monday[2].detail, /180 g toor dal/);
+});
+
+test("a lower weight reduces the gram amounts", function () {
+  const light = L.menuFor("2026-11-02", { feet: 5, inches: 8, weightKg: 60, age: 46 });
+  const base = L.menuFor("2026-11-02", { feet: 5, inches: 8, weightKg: 90, age: 46 });
+  function gramsIn(text) {
+    const found = text.match(/(\d+) g/);
+    return found ? Number(found[1]) : 0;
+  }
+  assert.ok(gramsIn(light[2].detail) < gramsIn(base[2].detail));
+  assert.equal(L.measures({ feet: 5, inches: 0, weightKg: 90, age: 46 }).inches, 0);
+});
+
+test("the week has seven different vegetarian days", function () {
+  const week = L.weekMenus({ feet: 5, inches: 8, weightKg: 90, age: 46 });
+  assert.equal(week.length, 7);
+  const names = week.map(function (day) { return day.name; });
+  assert.deepEqual(names, ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"]);
+  const breakfasts = week.map(function (day) { return day.meals[0].title; });
+  assert.equal(new Set(breakfasts).size, 7);
+  const text = JSON.stringify(week).toLowerCase();
+  assert.equal(text.includes("egg"), false);
+});
+
 test("lab anniversary is twelve months after the completed date", function () {
   assert.equal(L.labNextDue("2026-11-04", 12), "2027-11-04");
   const soon = L.labCardState(

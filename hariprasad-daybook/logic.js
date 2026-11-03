@@ -230,50 +230,87 @@
     return lines.filter(Boolean).join("\r\n");
   }
 
-  var DIET = [
-    {
-      id: "breakfast",
-      time: "08:15",
-      title: "Vegetarian breakfast",
-      detail: "One of these: 1 katori vegetable poha with peanuts, or 2 moong chillas, or 2 small rotis with paneer or cabbage. Add a bowl of curd and one fruit. Tea or coffee, no sugar."
-    },
-    {
-      id: "bottle",
-      time: "09:40",
-      title: "Refill the steel bottle",
-      detail: "1 litre of water in a bottle he will use again. Carry it instead of buying a bottle."
-    },
-    {
-      id: "lunch",
-      time: "13:15",
-      title: "Vegetarian lunch",
-      detail: "2 phulkas without ghee, 1 bowl dal or rajma or chole, 1 bowl seasonal sabzi, a large salad, 1 bowl curd. If the plate has rice, keep it to 1 small katori and take only 1 roti."
-    },
-    {
-      id: "snack",
-      time: "16:30",
-      title: "Drawer snack",
-      detail: "30 g roasted chana, or a small handful of unsalted peanuts with murmura, plus one fruit. Tea without sugar."
-    },
-    {
-      id: "water2",
-      time: "18:30",
-      title: "Second litre finished",
-      detail: "Refill the same bottle after lunch and finish it before leaving college."
-    },
-    {
-      id: "dinner",
-      time: "20:15",
-      title: "Vegetarian dinner by 9",
-      detail: "2 rotis, or 1 small bowl of millet or rice, plus dal, sabzi, and salad. Paneer 80–100 g can replace dal at one meal, not at both. No second dinner."
-    },
-    {
-      id: "walk",
-      time: "21:00",
-      title: "20-minute walk",
-      detail: "After dinner. A short walk between meetings does not replace this one."
-    }
-  ];
+  function numOr(value, fallback) {
+    if (value === "" || value === null || value === undefined) return fallback;
+    var n = Number(value);
+    return Number.isFinite(n) ? n : fallback;
+  }
+
+  function clamp(n, lo, hi) {
+    if (n < lo) return lo;
+    if (n > hi) return hi;
+    return n;
+  }
+
+  function heightCmFrom(feet, inches) {
+    return Math.round((feet * 12 + inches) * 2.54);
+  }
+
+  var BASE_BMR = 10 * 90 + 6.25 * heightCmFrom(5, 8) - 5 * 46 + 5;
+
+  function measures(input) {
+    var src = input || {};
+    var feet = clamp(Math.round(numOr(src.feet, 5)), 4, 7);
+    var inches = clamp(Math.round(numOr(src.inches, 8)), 0, 11);
+    var weightKg = clamp(Math.round(numOr(src.weightKg, 90) * 10) / 10, 40, 200);
+    var age = clamp(Math.round(numOr(src.age, 46)), 18, 90);
+    var heightCm = heightCmFrom(feet, inches);
+    var bmr = 10 * weightKg + 6.25 * heightCm - 5 * age + 5;
+    var factor = Math.round(clamp(bmr / BASE_BMR, 0.7, 1.4) * 100) / 100;
+    return {
+      feet: feet,
+      inches: inches,
+      weightKg: weightKg,
+      age: age,
+      heightCm: heightCm,
+      heightLabel: feet + "'" + inches + '"',
+      bmi: bmi(weightKg, heightCm),
+      factor: factor
+    };
+  }
+
+  function grams(base, factor) {
+    return Math.max(5, Math.round((base * factor) / 5) * 5);
+  }
+
+  function dayPlan(day, factor) {
+    var g = function (n) { return grams(n, factor) + " g"; };
+    var water = grams(1000, factor) + " ml";
+    var plans = [
+      ["Sunday", "Vegetable upma", g(180) + " vegetable upma, " + g(100) + " curd, one fruit. Tea or coffee, no sugar.", "2 rotis, " + g(180) + " mixed dal, " + g(150) + " bhindi or another seasonal sabzi, salad, " + g(100) + " curd.", g(25) + " roasted makhana and one fruit.", "2 rotis, " + g(180) + " moong dal, " + g(150) + " lauki, salad."],
+      ["Monday", "Vegetable poha", g(180) + " vegetable poha, " + g(15) + " peanuts, " + g(80) + " curd, one fruit. Tea or coffee, no sugar.", "2 phulkas without ghee, " + g(180) + " toor dal, " + g(150) + " seasonal sabzi, salad, " + g(100) + " curd.", g(30) + " roasted chana and one fruit.", "2 rotis, " + g(180) + " masoor dal, " + g(150) + " cabbage, salad."],
+      ["Tuesday", "Moong chilla", "2 moong chillas, mint chutney, " + g(100) + " curd, one fruit. Tea or coffee, no sugar.", "1 roti and " + g(100) + " cooked rice, " + g(180) + " rajma, salad, " + g(100) + " curd.", g(20) + " unsalted peanuts, " + g(20) + " murmura, one fruit.", "2 rotis, jowar or wheat, " + g(180) + " dal palak, salad."],
+      ["Wednesday", "Paneer rotis", "2 small rotis filled with " + g(80) + " paneer, " + g(100) + " curd, one fruit.", "2 rotis, " + g(180) + " chole, salad, " + g(100) + " curd. Chole is the dal today.", g(30) + " roasted chana.", g(200) + " moong khichdi, " + g(100) + " curd, salad."],
+      ["Thursday", "Besan chilla", "2 besan chillas, " + g(100) + " curd, one fruit. Tea or coffee, no sugar.", "2 rotis, " + g(180) + " dal, " + g(150) + " carrot and peas, salad, " + g(100) + " curd.", "One fruit and " + g(15) + " peanuts.", "2 rotis, " + g(80) + " paneer bhurji in place of dal, " + g(150) + " sabzi, salad."],
+      ["Friday", "Vegetable daliya", g(180) + " vegetable daliya, " + g(100) + " curd, one fruit. Tea or coffee, no sugar.", "2 rotis, " + g(180) + " dal, " + g(120) + " dry aloo-gobi, salad, " + g(100) + " curd.", g(30) + " roasted chana and one fruit.", "2 rotis, " + g(180) + " dal, " + g(150) + " beans or peas, salad."],
+      ["Saturday", "Idli or dhokla", "3 idlis or 4 pieces of dhokla, a small bowl of sambar, " + g(100) + " curd.", "1 roti and " + g(100) + " cooked rice, " + g(200) + " sambar, " + g(150) + " vegetable, " + g(100) + " curd.", "One fruit and " + g(20) + " roasted chana.", "2 rotis, " + g(180) + " dal, " + g(150) + " seasonal sabzi, salad."]
+    ];
+    var row = plans[day];
+    return {
+      name: row[0],
+      meals: [
+        { id: "breakfast", time: "08:15", title: row[0] + " breakfast — " + row[1], detail: row[2] },
+        { id: "bottle", time: "09:40", title: "Steel bottle", detail: water + " of water. Carry the same bottle instead of buying one." },
+        { id: "lunch", time: "13:15", title: row[0] + " lunch", detail: row[3] },
+        { id: "snack", time: "16:30", title: row[0] + " drawer snack", detail: row[4] + " Tea without sugar." },
+        { id: "water2", time: "18:30", title: "Second fill", detail: "Refill the same bottle with " + water + " and finish it before leaving." },
+        { id: "dinner", time: "20:15", title: row[0] + " dinner", detail: row[5] + " Finish by 9." },
+        { id: "walk", time: "21:00", title: "20-minute walk", detail: "After dinner." }
+      ]
+    };
+  }
+
+  function menuFor(iso, profile) {
+    var m = measures(profile);
+    return dayPlan(parseISODate(iso).getDay(), m.factor).meals;
+  }
+
+  function weekMenus(profile) {
+    var factor = measures(profile).factor;
+    var out = [];
+    for (var i = 0; i < 7; i++) out.push(dayPlan(i, factor));
+    return out;
+  }
 
   var LABS = [
     {
@@ -329,7 +366,10 @@
     labNextDue: labNextDue,
     labCardState: labCardState,
     buildIcs: buildIcs,
-    DIET: DIET,
+    measures: measures,
+    menuFor: menuFor,
+    weekMenus: weekMenus,
+    grams: grams,
     LABS: LABS
   };
 });

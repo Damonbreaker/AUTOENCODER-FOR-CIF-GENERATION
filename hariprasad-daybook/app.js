@@ -14,7 +14,8 @@
       notes: {},
       ack: {},
       snooze: {},
-      labs: { completedOn: "", appointmentOn: "", remindDaysBefore: 7, lastNudge: "" }
+      labs: { completedOn: "", appointmentOn: "", remindDaysBefore: 7, lastNudge: "" },
+      profile: { feet: 5, inches: 8, weightKg: 90, age: 46 }
     };
   }
 
@@ -29,6 +30,7 @@
       base.ack = raw.ack || {};
       base.snooze = raw.snooze || {};
       base.labs = Object.assign(base.labs, raw.labs || {});
+      base.profile = Object.assign(base.profile, raw.profile || {});
       return base;
     } catch (e) {
       return emptyState();
@@ -176,7 +178,7 @@
 
   function dietBox(iso) {
     var checks = state.checks[iso] || {};
-    return L.DIET.map(function (item) {
+    return L.menuFor(iso, state.profile).map(function (item) {
       var on = !!checks[item.id];
       return (
         '<label class="check' + (on ? " done" : "") + '">' +
@@ -231,7 +233,7 @@
     if (lab.kind === "unbooked" || lab.nudge) {
       labHtml = '<div class="card"><p class="kicker">Lal PathLabs</p><h2>' +
         (lab.kind === "unbooked" ? "Yearly panel not booked" : "Tests due " + escapeHtml(lab.date)) +
-        '</h2><p class="muted">Open Labs for the exact test names. Fasting sample, morning collection.</p>' +
+        '</h2><p class="muted">Open Labs for the exact test names.</p>' +
         '<button class="quiet" type="button" data-tab-jump="labs">Open lab list</button></div>';
     }
     document.getElementById("today").innerHTML =
@@ -275,40 +277,67 @@
       '<textarea id="day-note" data-note="' + selected + '">' + escapeHtml(state.notes[selected] || "") + "</textarea></div>";
   }
 
+  function weekMenusHtml() {
+    var todayName = L.parseISODate(todayISO()).toLocaleDateString("en-IN", { weekday: "long" });
+    return L.weekMenus(state.profile).map(function (day) {
+      var today = day.name === todayName;
+      return (
+        '<div class="card' + (today ? " today-menu" : "") + '">' +
+        (today ? '<p class="kicker">Today</p>' : "") +
+        "<h2>" + escapeHtml(day.name) + "</h2>" +
+        day.meals.map(function (meal) {
+          return '<div class="meal"><span class="time">' + meal.time + "</span>" +
+            '<div class="title">' + escapeHtml(meal.title) + "</div>" +
+            '<div class="detail">' + escapeHtml(meal.detail) + "</div></div>";
+        }).join("") +
+        "</div>"
+      );
+    }).join("");
+  }
+
+  function refreshPortions() {
+    var saved = state.profile;
+    function pick(id, key, lo, hi) {
+      var el = document.getElementById(id);
+      if (!el || String(el.value).trim() === "") return saved[key];
+      var n = Number(el.value);
+      if (!Number.isFinite(n) || n < lo || n > hi) return saved[key];
+      return n;
+    }
+    var m = L.measures({
+      feet: pick("p-feet", "feet", 4, 7),
+      inches: pick("p-inches", "inches", 0, 11),
+      weightKg: pick("p-weight", "weightKg", 40, 200),
+      age: pick("p-age", "age", 18, 90)
+    });
+    state.profile = { feet: m.feet, inches: m.inches, weightKg: m.weightKg, age: m.age };
+    save();
+    var bmiEl = document.getElementById("bmi-value");
+    var heightEl = document.getElementById("height-label");
+    if (bmiEl) bmiEl.textContent = m.bmi.toFixed(1);
+    if (heightEl) heightEl.textContent = m.heightLabel;
+    var menus = document.getElementById("week-menus");
+    if (menus) menus.innerHTML = weekMenusHtml();
+    var ticks = document.getElementById("today-ticks");
+    if (ticks) ticks.innerHTML = dietBox(todayISO());
+  }
+
   function renderDiet() {
-    var bmi = L.bmi(L.PROFILE.weightKg, L.PROFILE.heightCm);
+    var m = L.measures(state.profile);
     document.getElementById("diet").innerHTML =
       '<div class="card"><p class="kicker">Fully vegetarian</p><h2>A college day, 10 to 7</h2>' +
-      '<div class="stats"><div class="stat"><span class="tiny">Height</span><b>' + L.PROFILE.heightIn +
-      '</b></div><div class="stat"><span class="tiny">Weight</span><b>' + L.PROFILE.weightKg +
-      ' kg</b></div><div class="stat"><span class="tiny">Age</span><b>' + L.PROFILE.ageLabel +
-      '</b></div><div class="stat"><span class="tiny">BMI</span><b>' + bmi + "</b></div></div>" +
-      '<p class="muted" style="margin-top:10px">At about 5\'8" and 90 kg, portions stay measured. The food is vegetarian, packed in a steel box, and built around dal, curd, seasonal sabzi, and a reused bottle.</p></div>' +
-      '<div class="card"><h2>Breakfast, 8:15, at home</h2><p>Pick one. Tea or coffee has no sugar. Add one fruit.</p><ul class="plain">' +
-      "<li>1 katori vegetable poha with a spoon of peanuts, plus a small bowl of curd.</li>" +
-      "<li>2 moong chillas with mint chutney and a bowl of curd.</li>" +
-      "<li>2 small rotis filled with 80 g paneer or grated cabbage, plus curd.</li>" +
-      "</ul></div>" +
-      '<div class="card"><h2>Lunch, 1:15</h2><p>Pack a steel tiffin, or say this at the canteen: 2 phulkas, no ghee, one bowl of dal, one bowl of seasonal sabzi, salad, and curd.</p><ul class="plain">' +
-      "<li>Rajma or chole can be the dal that day. It does not come with a second bowl of rice.</li>" +
-      "<li>Rice, when it is on the plate, is 1 small katori, and the rotis drop from 2 to 1.</li>" +
-      "<li>Leave samosa, bread pakora, patty, naan, sweet lassi, packaged juice, and a daily paneer-butter masala.</li>" +
-      "</ul></div>" +
-      '<div class="card"><h2>4:30, from the drawer</h2><ul class="plain">' +
-      "<li>30 g roasted chana, or a small handful of unsalted peanuts with murmura.</li>" +
-      "<li>One fruit: guava, apple, pear, or banana.</li>" +
-      "<li>Tea without sugar.</li>" +
-      "<li>On Sunday, pack five days of chana, peanuts, and fruit into the office drawer.</li>" +
-      "</ul></div>" +
-      '<div class="card"><h2>Dinner, 8:15, finished by 9</h2><ul class="plain">' +
-      "<li>2 rotis, or 1 small bowl of jowar, bajra, or rice.</li>" +
-      "<li>1 bowl dal, 1 bowl sabzi, salad.</li>" +
-      "<li>Paneer, 80–100 g, can stand in for dal at dinner or at lunch, not at both.</li>" +
-      "<li>A sweet at a function can be one small piece. Skip the next day’s drawer snack if that happens.</li>" +
-      "<li>Then walk for 20 minutes.</li>" +
-      '</ul><p class="muted">Dal at the meals, curd every day, and paneer a few days a week cover protein without a powder.</p></div>' +
-      '<div class="card"><h2>Supplements</h2><p class="muted">None to start while he is well. The yearly blood test includes vitamin B12 and vitamin D. A fully vegetarian diet can run low on B12, so those two are taken only if the report is low, at the dose a doctor writes.</p></div>' +
-      '<div class="card"><h2>Today’s ticks</h2>' + dietBox(todayISO()) + "</div>";
+      '<div class="measure-grid">' +
+      '<label>Feet<input id="p-feet" type="number" inputmode="numeric" min="4" max="7" step="1" value="' + m.feet + '" /></label>' +
+      '<label>Inches<input id="p-inches" type="number" inputmode="numeric" min="0" max="11" step="1" value="' + m.inches + '" /></label>' +
+      '<label>Weight, kg<input id="p-weight" type="number" inputmode="decimal" min="40" max="200" step="0.1" value="' + m.weightKg + '" /></label>' +
+      '<label>Age<input id="p-age" type="number" inputmode="numeric" min="18" max="90" step="1" value="' + m.age + '" /></label>' +
+      "</div>" +
+      '<div class="stats" style="margin-top:10px"><div class="stat"><span class="tiny">Height</span><b id="height-label">' +
+      escapeHtml(m.heightLabel) + '</b></div><div class="stat"><span class="tiny">BMI</span><b id="bmi-value">' +
+      m.bmi.toFixed(1) + "</b></div></div>" +
+      '<p class="muted" style="margin-top:10px">Write height, weight, and age. The seven menus change their gram amounts, and BMI updates with them.</p></div>' +
+      '<div id="week-menus">' + weekMenusHtml() + "</div>" +
+      '<div class="card"><h2>Today’s ticks</h2><div id="today-ticks">' + dietBox(todayISO()) + "</div></div>";
   }
 
   function renderLabs() {
@@ -319,7 +348,7 @@
     if (card.kind === "overdue") status = "The 12-month panel was due " + card.date + ".";
     document.getElementById("labs").innerHTML =
       '<div class="card"><p class="kicker">Dr Lal PathLabs</p><h2>Yearly screen</h2><p>' + escapeHtml(status) +
-      '</p><p class="muted">Fast 10–12 hours. Water is allowed. Give the first urine of the morning. Fill Form 59 at the centre. He is well; this is a screen, not a treatment.</p>' +
+      "</p>" +
       L.LABS.map(function (lab) {
         return '<div class="lab"><div class="title">' + escapeHtml(lab.name) + "</div>" +
           (lab.code ? '<div class="code">' + escapeHtml(lab.code) + "</div>" : "") +
@@ -433,6 +462,9 @@
       save();
       render();
     }
+    if (box.id === "p-feet" || box.id === "p-inches" || box.id === "p-weight" || box.id === "p-age") {
+      refreshPortions();
+    }
     if (box.id === "lab-appt" || box.id === "lab-done" || box.id === "lab-remind") {
       state.labs.appointmentOn = document.getElementById("lab-appt").value;
       state.labs.completedOn = document.getElementById("lab-done").value;
@@ -440,6 +472,18 @@
       save();
       render();
     }
+  });
+
+  document.body.addEventListener("input", function (event) {
+    var id = event.target.id;
+    if (id === "p-feet" || id === "p-inches" || id === "p-weight" || id === "p-age") refreshPortions();
+  });
+
+  document.body.addEventListener("focusout", function (event) {
+    var map = { "p-feet": "feet", "p-inches": "inches", "p-weight": "weightKg", "p-age": "age" };
+    var key = map[event.target.id];
+    if (!key) return;
+    event.target.value = L.measures(state.profile)[key];
   });
 
   document.getElementById("commit-form").addEventListener("submit", function (event) {
@@ -475,10 +519,9 @@
 
   function openInstall() {
     if (standaloneMode()) return;
-    var ios = /iphone|ipad|ipod/i.test(window.navigator.userAgent);
-    document.getElementById("install-ios").hidden = !ios;
-    document.getElementById("install-android").hidden = ios;
-    document.getElementById("install-now").hidden = ios || !deferredPrompt;
+    document.getElementById("install-ios").hidden = false;
+    document.getElementById("install-android").hidden = false;
+    document.getElementById("install-now").hidden = !deferredPrompt;
     document.getElementById("install-sheet").showModal();
   }
 
@@ -494,17 +537,6 @@
   });
 
   document.getElementById("install-btn").addEventListener("click", function () {
-    if (standaloneMode()) return;
-    if (deferredPrompt) {
-      deferredPrompt.prompt();
-      deferredPrompt.userChoice.then(function (choice) {
-        deferredPrompt = null;
-        if (choice.outcome === "accepted") {
-          document.getElementById("install-btn").textContent = "Installed";
-        }
-      });
-      return;
-    }
     openInstall();
   });
 

@@ -130,7 +130,7 @@ button.full { width: 100%; }
 .cal button.on { background: var(--navy); color: white; }
 
 label.field { display: block; font-size: 0.82rem; color: var(--muted); margin: 10px 0 4px; }
-input[type="text"], input[type="date"], input[type="time"], select, textarea {
+input[type="text"], input[type="date"], input[type="time"], input[type="number"], select, textarea {
   width: 100%;
   border: 1px solid var(--line);
   background: white;
@@ -143,11 +143,22 @@ textarea { min-height: 110px; resize: vertical; }
 
 dialog {
   width: min(560px, calc(100% - 24px));
+  max-height: calc(100% - 24px);
+  overflow: auto;
   border: 0;
   border-radius: 18px;
   padding: 16px;
   background: var(--card);
 }
+.install-block + .install-block { margin-top: 14px; padding-top: 12px; border-top: 1px solid var(--line); }
+.install-block h3 { margin: 0 0 6px; font-size: 1.05rem; }
+#install-now { margin-top: 10px; }
+.measure-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.measure-grid label { display: block; font-size: 0.82rem; color: var(--muted); }
+.measure-grid input { margin-top: 4px; }
+.card.today-menu { border-color: var(--navy); }
+.meal { padding: 10px 0; border-top: 1px solid var(--line); }
+.meal:first-of-type { border-top: 0; }
 dialog::backdrop { background: rgba(20, 30, 40, 0.45); }
 
 .lab {

@@ -1,4 +1,4 @@
-const CACHE_NAME = "hk-daybook-v2";
+const CACHE_NAME = "hk-daybook-v3";
 const ASSETS = [
   "./",
   "./index.html",
