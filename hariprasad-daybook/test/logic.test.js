@@ -96,6 +96,22 @@ test("the week has seven different vegetarian days", function () {
   assert.equal(text.includes("egg"), false);
 });
 
+test("the iPhone profile only adds a full-screen Daybook icon", function () {
+  const xml = L.buildWebClip("https://daybook.example/path/?a=1&b=2", "QUJD");
+  assert.match(xml, /com\.apple\.webClip\.managed/);
+  assert.match(xml, /<key>FullScreen<\/key>\n<true\/>/);
+  assert.match(xml, /<string>https:\/\/daybook\.example\/path\/\?a=1&amp;b=2<\/string>/);
+  assert.match(xml, /<key>Label<\/key>\n<string>Daybook<\/string>/);
+  assert.match(xml, /<data>QUJD<\/data>/);
+  assert.equal(xml.includes("VPN"), false);
+  assert.equal(xml.includes("PayloadType"), true);
+  const types = xml.match(/<key>PayloadType<\/key>\n<string>([^<]+)<\/string>/g);
+  assert.deepEqual(types, [
+    "<key>PayloadType</key>\n<string>com.apple.webClip.managed</string>",
+    "<key>PayloadType</key>\n<string>Configuration</string>"
+  ]);
+});
+
 test("lab anniversary is twelve months after the completed date", function () {
   assert.equal(L.labNextDue("2026-11-04", 12), "2027-11-04");
   const soon = L.labCardState(

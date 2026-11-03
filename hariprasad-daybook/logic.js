@@ -312,6 +312,63 @@
     return out;
   }
 
+  function xmlEscape(text) {
+    return String(text)
+      .replace(/&/g, "&amp;")
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;");
+  }
+
+  function buildWebClip(pageUrl, iconBase64) {
+    var icon = iconBase64 ? "<key>Icon</key>\n<data>" + iconBase64 + "</data>\n" : "";
+    return [
+      '<?xml version="1.0" encoding="UTF-8"?>',
+      '<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">',
+      '<plist version="1.0">',
+      "<dict>",
+      "<key>PayloadContent</key>",
+      "<array>",
+      "<dict>",
+      "<key>FullScreen</key>",
+      "<true/>",
+      "<key>IsRemovable</key>",
+      "<true/>",
+      "<key>Label</key>",
+      "<string>Daybook</string>",
+      "<key>PayloadIdentifier</key>",
+      "<string>com.daybook.webclip</string>",
+      "<key>PayloadType</key>",
+      "<string>com.apple.webClip.managed</string>",
+      "<key>PayloadUUID</key>",
+      "<string>8C6B1E2A-4F0D-4A7B-9C3E-1D5A7B9E2F10</string>",
+      "<key>PayloadVersion</key>",
+      "<integer>1</integer>",
+      "<key>Precomposed</key>",
+      "<true/>",
+      "<key>URL</key>",
+      "<string>" + xmlEscape(pageUrl) + "</string>",
+      icon.trim(),
+      "</dict>",
+      "</array>",
+      "<key>PayloadDisplayName</key>",
+      "<string>Daybook</string>",
+      "<key>PayloadDescription</key>",
+      "<string>Adds the Daybook icon to the Home Screen.</string>",
+      "<key>PayloadIdentifier</key>",
+      "<string>com.daybook.profile</string>",
+      "<key>PayloadRemovalDisallowed</key>",
+      "<false/>",
+      "<key>PayloadType</key>",
+      "<string>Configuration</string>",
+      "<key>PayloadUUID</key>",
+      "<string>2A9F6C40-7B11-4E85-A1D2-6F0C8E4B9A77</string>",
+      "<key>PayloadVersion</key>",
+      "<integer>1</integer>",
+      "</dict>",
+      "</plist>"
+    ].filter(Boolean).join("\n");
+  }
+
   var LABS = [
     {
       id: "super4",
@@ -370,6 +427,7 @@
     menuFor: menuFor,
     weekMenus: weekMenus,
     grams: grams,
+    buildWebClip: buildWebClip,
     LABS: LABS
   };
 });

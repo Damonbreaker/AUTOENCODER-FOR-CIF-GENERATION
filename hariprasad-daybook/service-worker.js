@@ -1,4 +1,6 @@
-const CACHE_NAME = "hk-daybook-v3";
+importScripts("./logic.js");
+
+const CACHE_NAME = "hk-daybook-v4";
 const ASSETS = [
   "./",
   "./index.html",
@@ -31,10 +33,38 @@ self.addEventListener("activate", (event) => {
   );
 });
 
+function profileResponse() {
+  const page = new URL("./", self.registration.scope).href;
+  return fetch(new URL("./assets/icon-180.png", self.registration.scope))
+    .then((iconRes) => (iconRes.ok ? iconRes.arrayBuffer() : Promise.reject()))
+    .then((buffer) => {
+      const bytes = new Uint8Array(buffer);
+      let binary = "";
+      for (let i = 0; i < bytes.length; i++) binary += String.fromCharCode(bytes[i]);
+      return btoa(binary);
+    })
+    .catch(() => "")
+    .then((icon) => {
+      const xml = self.DaybookLogic.buildWebClip(page, icon);
+      return new Response(xml, {
+        status: 200,
+        headers: {
+          "Content-Type": "application/x-apple-aspen-config",
+          "Content-Disposition": 'attachment; filename="Daybook.mobileconfig"',
+          "Cache-Control": "no-store"
+        }
+      });
+    });
+}
+
 self.addEventListener("fetch", (event) => {
   if (event.request.method !== "GET") return;
   const url = new URL(event.request.url);
   if (url.origin !== self.location.origin) return;
+  if (url.pathname.endsWith("/daybook.mobileconfig")) {
+    event.respondWith(profileResponse());
+    return;
+  }
   event.respondWith(
     fetch(event.request)
       .then((response) => {

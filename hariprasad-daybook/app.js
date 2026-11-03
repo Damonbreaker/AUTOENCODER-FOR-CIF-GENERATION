@@ -227,7 +227,7 @@
     var installed = window.matchMedia("(display-mode: standalone)").matches || window.navigator.standalone;
     var install = installed
       ? ""
-      : '<div class="card"><h2>Install Daybook</h2><p class="muted">Android adds it to the app list. iPhone adds it from Safari’s share sheet. Either way it opens from its own icon.</p><button class="solid full" type="button" id="install-card">Install</button></div>';
+      : '<div class="card"><h2>Install Daybook</h2><p class="muted">Adds the Daybook icon on this phone.</p><button class="solid full" type="button" id="install-card">Install</button></div>';
     var lab = L.labCardState(state.labs, iso);
     var labHtml = "";
     if (lab.kind === "unbooked" || lab.nudge) {
@@ -398,7 +398,7 @@
       render();
     }
     if (target.id === "add-today" || target.id === "add-day") openForm(null);
-    if (target.id === "install-card") openInstall();
+    if (target.id === "install-card") startInstall();
     if (target.id === "prev-month") {
       cursor = new Date(cursor.getFullYear(), cursor.getMonth() - 1, 1);
       render();
@@ -511,49 +511,88 @@
     if (isNew) downloadIcs(data);
   });
 
-  var deferredPrompt = null;
-
   function standaloneMode() {
     return window.matchMedia("(display-mode: standalone)").matches || window.navigator.standalone === true;
   }
 
-  function openInstall() {
-    if (standaloneMode()) return;
-    document.getElementById("install-ios").hidden = false;
-    document.getElementById("install-android").hidden = false;
-    document.getElementById("install-now").hidden = !deferredPrompt;
-    document.getElementById("install-sheet").showModal();
+  function isIos() {
+    var ua = window.navigator.userAgent || "";
+    var touchMac = window.navigator.platform === "MacIntel" && window.navigator.maxTouchPoints > 1;
+    return /iphone|ipad|ipod/i.test(ua) || touchMac;
   }
 
-  window.addEventListener("beforeinstallprompt", function (event) {
-    event.preventDefault();
-    deferredPrompt = event;
-    document.getElementById("install-btn").textContent = "Install";
-  });
+  function markInstalled() {
+    var button = document.getElementById("install-btn");
+    if (button) button.textContent = "Installed";
+  }
+
+  function promptInstall() {
+    var promptEvent = window.__daybookInstall;
+    if (!promptEvent) return Promise.resolve(false);
+    window.__daybookInstall = null;
+    return Promise.resolve()
+      .then(function () { return promptEvent.prompt(); })
+      .then(function () { return promptEvent.userChoice; })
+      .then(function (choice) {
+        if (choice && choice.outcome === "accepted") markInstalled();
+        return true;
+      })
+      .catch(function () { return false; });
+  }
+
+  function installIphone() {
+    var url = new URL("./daybook.mobileconfig", window.location.href).href;
+    var go = function () { window.location.assign(url); };
+    if (!navigator.serviceWorker) {
+      go();
+      return;
+    }
+    var timer = setTimeout(go, 2500);
+    navigator.serviceWorker.ready.then(function () {
+      clearTimeout(timer);
+      go();
+    }).catch(function () {
+      clearTimeout(timer);
+      go();
+    });
+  }
+
+  function startInstall() {
+    if (standaloneMode()) return;
+    if (isIos()) {
+      installIphone();
+      return;
+    }
+    if (window.__daybookInstall) {
+      promptInstall();
+      return;
+    }
+    if (navigator.install) {
+      navigator.install().then(function () { markInstalled(); }).catch(function () {});
+      return;
+    }
+    var tries = 0;
+    var timer = setInterval(function () {
+      tries += 1;
+      if (window.__daybookInstall) {
+        clearInterval(timer);
+        promptInstall();
+        return;
+      }
+      if (tries >= 10) clearInterval(timer);
+    }, 200);
+  }
 
   window.addEventListener("appinstalled", function () {
-    deferredPrompt = null;
-    document.getElementById("install-btn").textContent = "Installed";
+    window.__daybookInstall = null;
+    markInstalled();
   });
 
   document.getElementById("install-btn").addEventListener("click", function () {
-    openInstall();
+    startInstall();
   });
 
-  document.getElementById("install-now").addEventListener("click", function () {
-    if (!deferredPrompt) return;
-    deferredPrompt.prompt();
-    deferredPrompt.userChoice.then(function () {
-      deferredPrompt = null;
-      document.getElementById("install-sheet").close();
-    });
-  });
-
-  document.getElementById("close-install").addEventListener("click", function () {
-    document.getElementById("install-sheet").close();
-  });
-
-  if (standaloneMode()) document.getElementById("install-btn").textContent = "Installed";
+  if (standaloneMode()) markInstalled();
 
   document.getElementById("notify-btn").addEventListener("click", function () {
     if (!("Notification" in window)) {
