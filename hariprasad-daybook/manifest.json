@@ -1,0 +1,26 @@
+{
+  "id": "./index.html",
+  "name": "Daybook — Dr. Hariprasad Kodamana",
+  "short_name": "Daybook",
+  "description": "Daily checklist, diet, Lal PathLabs reminders, and a personal commitment diary for Dr. Hariprasad Kodamana.",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#f4f0e6",
+  "theme_color": "#143d66",
+  "icons": [
+    {
+      "src": "assets/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "assets/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}

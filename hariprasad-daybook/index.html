@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="theme-color" content="#143d66" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-title" content="Daybook" />
+  <link rel="manifest" href="./manifest.json" />
+  <link rel="apple-touch-icon" href="./assets/icon-180.png" />
+  <link rel="icon" type="image/png" href="./assets/icon-192.png" />
+  <title>Daybook — Dr. Hariprasad Kodamana</title>
+  <link rel="stylesheet" href="./styles.css" />
+</head>
+<body>
+  <header>
+    <div class="brand">
+      <div>
+        <h1>Daybook</h1>
+        <p class="who">Dr. Hariprasad Kodamana</p>
+      </div>
+      <button class="ghost" id="notify-btn" type="button">Allow alerts</button>
+    </div>
+  </header>
+  <main class="wrap">
+    <section id="today" class="panel active"></section>
+    <section id="diary" class="panel"></section>
+    <section id="diet" class="panel"></section>
+    <section id="labs" class="panel"></section>
+  </main>
+  <nav>
+    <button type="button" data-tab="today" class="active">Today</button>
+    <button type="button" data-tab="diary">Diary</button>
+    <button type="button" data-tab="diet">Diet</button>
+    <button type="button" data-tab="labs">Labs</button>
+  </nav>
+  <dialog id="sheet">
+    <form id="commit-form">
+      <p class="kicker" id="form-kicker">New commitment</p>
+      <h2 id="form-title">Fix a time</h2>
+      <label class="field" for="f-title">What</label>
+      <input id="f-title" name="title" type="text" required maxlength="120" placeholder="Meeting, call, family, travel" />
+      <div class="row">
+        <div style="flex:1">
+          <label class="field" for="f-date">Date</label>
+          <input id="f-date" name="date" type="date" required />
+        </div>
+        <div style="flex:1">
+          <label class="field" for="f-time">Time</label>
+          <input id="f-time" name="time" type="time" required value="16:00" />
+        </div>
+      </div>
+      <label class="field" for="f-notes">Note</label>
+      <textarea id="f-notes" name="notes" placeholder="What has to be ready"></textarea>
+      <label class="field" for="f-repeat">Repeats</label>
+      <select id="f-repeat" name="repeat">
+        <option value="once">Once</option>
+        <option value="daily">Every day</option>
+        <option value="weekdays">Weekdays</option>
+        <option value="weekly">Every week</option>
+        <option value="monthly">Every month</option>
+      </select>
+      <label class="field" for="f-remind">First reminder</label>
+      <select id="f-remind" name="remindMode">
+        <option value="at">At the time</option>
+        <option value="before15" selected>15 minutes before</option>
+        <option value="before30">30 minutes before</option>
+        <option value="before60">1 hour before</option>
+        <option value="morning8">8:00 that morning</option>
+      </select>
+      <p class="tiny">Saving a new commitment also downloads a Calendar file. Open it to put the alarm on the iPhone. That alarm still rings when Daybook is closed.</p>
+      <label class="field" for="f-nag">How often to remind</label>
+      <select id="f-nag" name="nag">
+        <option value="once" selected>Once</option>
+        <option value="every15x3">Every 15 minutes, three times</option>
+        <option value="every30x3">Every 30 minutes, three times</option>
+      </select>
+      <div class="row" style="margin-top:14px">
+        <button class="solid" type="submit">Save</button>
+        <button class="quiet" type="button" id="close-sheet">Close</button>
+      </div>
+    </form>
+  </dialog>
+  <script src="./logic.js"></script>
+  <script src="./app.js"></script>
+</body>
+</html>
