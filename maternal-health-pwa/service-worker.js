@@ -1,4 +1,4 @@
-const CACHE_NAME = "maternal-health-pwa-v7";
+const CACHE_NAME = "maternal-health-pwa-v8";
 const ASSETS_TO_CACHE = [
   "./",
   "./index.html",

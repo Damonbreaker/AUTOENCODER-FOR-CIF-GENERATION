@@ -24,8 +24,8 @@ cp "$ROOT/AndroidManifest.xml" "$WORK/AndroidManifest.xml"
   --manifest "$WORK/AndroidManifest.xml" \
   --min-sdk-version 24 \
   --target-sdk-version 34 \
-  --version-code 2 \
-  --version-name 1.1 \
+  --version-code 3 \
+  --version-name 1.2 \
   "$WORK/compiled.zip"
 
 javac --release 8 -classpath "$ANDROID_JAR" -d "$WORK/classes" "$ROOT/src/com/maacare/app/MainActivity.java"
