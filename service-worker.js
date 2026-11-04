@@ -1,4 +1,4 @@
-const CACHE_NAME = "maternal-health-pwa-v8";
+const CACHE_NAME = "maternal-health-pwa-v9";
 const ASSETS_TO_CACHE = [
   "./",
   "./index.html",
@@ -93,11 +93,13 @@ function profileResponse(request) {
         "<key>PayloadVersion</key><integer>1</integer>",
         "</dict></plist>"
       ].filter(Boolean).join("\n");
-      return new Response(xml, {
+      const bytes = new TextEncoder().encode(xml);
+      return new Response(bytes, {
         status: 200,
         headers: {
           "Content-Type": "application/x-apple-aspen-config",
           "Content-Disposition": disposition,
+          "Content-Length": String(bytes.byteLength),
           "Cache-Control": "no-store"
         }
       });
@@ -115,7 +117,6 @@ self.addEventListener("fetch", (event) => {
     return;
   }
   if (requestUrl.pathname.endsWith("/MaaCare.apk")) {
-    event.respondWith(fetch(event.request));
     return;
   }
 

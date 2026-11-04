@@ -246,7 +246,7 @@
         }
         showAppNotification(
           "Maternal Health App — Reminders Active",
-          "Daily reminders enabled for Ms. Rajni Singh (M is morning: Pantocid 40 and Lupisit DM 10/500. Gluconorm-G 3 before breakfast and before dinner. N is night: Pioz MF 15 and Fibrovas. Prohance HP 1 scoop 12.5 g at 9:30 PM)."
+          "Daily reminders enabled for Ms. Rajni Singh (7:30 AM Pantocid 40 empty stomach, 8:00 AM Gluconorm-G 3, Lupisit DM 10/500 with breakfast, 7:00 PM Gluconorm-G 3, Pioz MF 15 after dinner, Fibrovas at 9:30 PM)."
         );
       } else {
         if (notificationStatus) {
@@ -416,10 +416,11 @@
         '<div><strong style="color:var(--primary);">6:45 AM &amp; 7:15 AM:</strong> ' +
         d.morning +
         "</div>" +
-        '<div><strong style="color:var(--primary);">Morning (M):</strong> Pantocid 40, 1 tablet, and Lupisit DM 10/500, 1 tablet.</div>' +
-        '<div><strong style="color:var(--primary);">8:30 AM Breakfast:</strong> Gluconorm-G 3, 1 tablet, before this meal. ' +
+        '<div><strong style="color:var(--primary);">7:30 AM:</strong> Pantocid 40, 1 tablet, empty stomach, sip of water. Breakfast is at 8:30.</div>' +
+        '<div><strong style="color:var(--primary);">8:00 AM:</strong> Gluconorm-G 3, 1 tablet, 30 minutes before breakfast.</div>' +
+        '<div><strong style="color:var(--primary);">8:30 AM Breakfast:</strong> ' +
         d.bf +
-        "</div>" +
+        " With the meal, or right after it: Lupisit DM 10/500, 1 tablet.</div>" +
         '<div><strong style="color:var(--success);">11:15 AM Mid-Day:</strong> ' +
         d.midday +
         "</div>" +
@@ -429,9 +430,10 @@
         '<div><strong style="color:var(--warn);">4:30 PM Evening Snack:</strong> ' +
         d.snack +
         "</div>" +
-        '<div><strong style="color:var(--warn);">7:30 PM Dinner &amp; 9:30 PM Bedtime:</strong> Gluconorm-G 3, 1 tablet, before this meal. ' +
+        '<div><strong style="color:var(--warn);">7:00 PM:</strong> Gluconorm-G 3, 1 tablet, 30 minutes before dinner.</div>' +
+        '<div><strong style="color:var(--warn);">7:30 PM Dinner:</strong> ' +
         d.dinner +
-        " Night (N): Pioz MF 15, 1 tablet, and Fibrovas, 1 tablet.</div>";
+        " Right after dinner: Pioz MF 15, 1 tablet. 9:30 PM bedtime: Fibrovas, 1 tablet.</div>";
     }
 
     var chkBoxes = document.querySelectorAll("input[data-chk]");
@@ -477,7 +479,7 @@
           " | PP: " +
           latest.pp +
           " mg/dL)",
-        body: "Follow the 31 Oct 2026 sheet. M is morning: Pantocid 40 and Lupisit DM 10/500. Gluconorm-G 3 before breakfast and before dinner. N is night: Pioz MF 15 and Fibrovas. Rapeed-D, Glynamic MP 2, Ondero 5, and Obimet GX 2 are stopped. Keep Prohance HP at 1 level scoop (12.5 g) at 8:30 AM and 1 level scoop (12.5 g) at 9:30 PM."
+        body: "Follow the 31 Oct 2026 sheet. 7:30 AM Pantocid 40 on an empty stomach. 8:00 AM Gluconorm-G 3. Lupisit DM 10/500 with breakfast. 7:00 PM Gluconorm-G 3. Pioz MF 15 right after dinner. Fibrovas at 9:30 PM bedtime. Rapeed-D, Glynamic MP 2, Ondero 5, and Obimet GX 2 are stopped. Keep Prohance HP at 1 level scoop (12.5 g) at 8:30 AM and 1 level scoop (12.5 g) at 9:30 PM."
       });
     } else {
       adv.push({
