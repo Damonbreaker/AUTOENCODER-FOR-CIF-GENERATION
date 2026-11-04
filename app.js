@@ -35,44 +35,118 @@
   }
 
   // -------------------------------------------------------------------------
-  // 1B. Native PWA Install Prompt Handler (beforeinstallprompt)
+  // 1B. Install button stays visible. Android opens the system dialog.
+  // iPhone downloads the home-screen profile.
   // -------------------------------------------------------------------------
   var deferredInstallPrompt = null;
   var installPwaBtn = document.getElementById("installPwaBtn");
   var pwaInstallStatus = document.getElementById("pwaInstallStatus");
 
+  function appAlreadyInstalled() {
+    return window.matchMedia("(display-mode: standalone)").matches || window.navigator.standalone === true;
+  }
+
+  function isIosPhone() {
+    var ua = window.navigator.userAgent || "";
+    var touchMac = window.navigator.platform === "MacIntel" && window.navigator.maxTouchPoints > 1;
+    return /iphone|ipad|ipod/i.test(ua) || touchMac;
+  }
+
+  function markAppInstalled(message) {
+    if (installPwaBtn) installPwaBtn.style.display = "none";
+    if (pwaInstallStatus) pwaInstallStatus.textContent = message;
+  }
+
+  function promptAndroidInstall() {
+    var promptEvent = deferredInstallPrompt;
+    if (!promptEvent) return Promise.resolve(false);
+    deferredInstallPrompt = null;
+    return Promise.resolve()
+      .then(function () { return promptEvent.prompt(); })
+      .then(function () { return promptEvent.userChoice; })
+      .then(function (choice) {
+        if (choice && choice.outcome === "accepted") {
+          markAppInstalled("App installed on your phone!");
+        }
+        return true;
+      })
+      .catch(function () { return false; });
+  }
+
+  function installOnIphone() {
+    var url = new URL("./maa-care.mobileconfig", window.location.href).href;
+    var go = function () { window.location.assign(url); };
+    if (!navigator.serviceWorker) {
+      go();
+      return;
+    }
+    var timer = setTimeout(go, 2500);
+    navigator.serviceWorker.ready.then(function () {
+      clearTimeout(timer);
+      go();
+    }).catch(function () {
+      clearTimeout(timer);
+      go();
+    });
+  }
+
+  function noteInstall(message) {
+    if (pwaInstallStatus) pwaInstallStatus.textContent = message;
+  }
+
+  function startPhoneInstall() {
+    if (appAlreadyInstalled()) return;
+    if (deferredInstallPrompt) {
+      promptAndroidInstall();
+      return;
+    }
+    if (isIosPhone()) {
+      var chromeOnIphone = /crios|fxios|edgios/i.test(window.navigator.userAgent || "");
+      noteInstall(chromeOnIphone
+        ? "Profile downloading. If the phone does not ask to install it, open this page in Safari and tap Install again."
+        : "Downloading Maa Care. Tap Allow, then open Settings and tap Install. Not Signed is normal.");
+      installOnIphone();
+      return;
+    }
+    noteInstall("Opening the phone install dialog…");
+    var tries = 0;
+    var timer = setInterval(function () {
+      tries += 1;
+      if (deferredInstallPrompt) {
+        clearInterval(timer);
+        promptAndroidInstall();
+        return;
+      }
+      if (tries >= 8) {
+        clearInterval(timer);
+        noteInstall("Open this page in Chrome, then tap Install App on Phone again.");
+      }
+    }, 200);
+  }
+
   window.addEventListener("beforeinstallprompt", function (e) {
     e.preventDefault();
     deferredInstallPrompt = e;
-    if (installPwaBtn) {
-      installPwaBtn.style.display = "inline-block";
-    }
+    if (installPwaBtn && !appAlreadyInstalled()) installPwaBtn.style.display = "inline-block";
     if (pwaInstallStatus) {
-      pwaInstallStatus.textContent =
-        "App is ready to install! Tap 'Install App on Phone' above.";
+      pwaInstallStatus.textContent = "Tap Install App on Phone.";
     }
   });
 
   if (installPwaBtn) {
-    installPwaBtn.addEventListener("click", async function () {
-      if (!deferredInstallPrompt) return;
-      deferredInstallPrompt.prompt();
-      var choiceResult = await deferredInstallPrompt.userChoice;
-      if (choiceResult && choiceResult.outcome === "accepted") {
-        installPwaBtn.style.display = "none";
-        if (pwaInstallStatus) {
-          pwaInstallStatus.textContent = "App installed on your phone!";
-        }
-      }
-      deferredInstallPrompt = null;
+    installPwaBtn.style.display = appAlreadyInstalled() ? "none" : "inline-block";
+    installPwaBtn.addEventListener("click", function () {
+      startPhoneInstall();
     });
   }
 
+  if (appAlreadyInstalled()) {
+    markAppInstalled("App is already on this phone.");
+  }
+
   window.addEventListener("appinstalled", function () {
-    if (installPwaBtn) installPwaBtn.style.display = "none";
-    if (pwaInstallStatus) {
-      pwaInstallStatus.textContent = "Maternal Health App installed!";
-    }
+    deferredInstallPrompt = null;
+    markAppInstalled("Maternal Health App installed!");
   });
 
   // -------------------------------------------------------------------------

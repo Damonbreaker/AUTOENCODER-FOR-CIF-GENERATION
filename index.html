@@ -132,7 +132,7 @@
   <div class="card">
     <div class="card-title"><span>Install App, Camera Scanner & Care Notifications</span></div>
     <div class="btn-row">
-      <button type="button" class="success" id="installPwaBtn" style="display:none;">Install App on Phone</button>
+      <button type="button" class="success" id="installPwaBtn">Install App on Phone</button>
       <button type="button" class="primary" id="openCameraBtn">Open Camera</button>
       <button type="button" class="success" id="capturePhotoBtn" style="display:none;">Capture Report Photo</button>
       <button type="button" class="primary" id="enableNotificationsBtn">Enable Notifications</button>
@@ -450,6 +450,12 @@
 <script src="./app.js"></script>
 <script>
   if ("serviceWorker" in navigator) {
+    var refreshing = false;
+    navigator.serviceWorker.addEventListener("controllerchange", function () {
+      if (refreshing) return;
+      refreshing = true;
+      window.location.reload();
+    });
     window.addEventListener("load", function () {
       navigator.serviceWorker
         .register("./service-worker.js", { scope: "./" })
