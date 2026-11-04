@@ -1,8 +1,9 @@
 #!/usr/bin/env python3
-"""Lined-paper notes for CHL7201 Assignment 2, questions 1 to 4.
+"""Plain-paper notes for CHL7201 Assignment 2, questions 1 to 4.
 
-The page is drawn to look like ballpoint handwriting. Equations are set in
-the same pen font as the words, so the numbers stay exactly as calculated.
+Matched to the Assignment 1 scan: blue ballpoint, rightward slant, plain
+white paper, and a centered underlined heading on the first page only.
+Equations use the same pen as the words, so the numbers stay exact.
 """
 
 from io import BytesIO
@@ -17,34 +18,30 @@ import numpy as np
 from PIL import Image, ImageDraw, ImageFont
 
 ROOT = Path(__file__).resolve().parent
-FONT_REG = ROOT / "fonts" / "Kalam-Regular.ttf"
-FONT_BOLD = ROOT / "fonts" / "Kalam-Bold.ttf"
+FONT_REG = ROOT / "fonts" / "Caveat.ttf"
 OUT = ROOT / "Assignment2_CHL7201_handwritten.pdf"
 
 font_manager.fontManager.addfont(str(FONT_REG))
-font_manager.fontManager.addfont(str(FONT_BOLD))
 matplotlib.rcParams["mathtext.fontset"] = "custom"
-matplotlib.rcParams["mathtext.rm"] = "Kalam"
-matplotlib.rcParams["mathtext.it"] = "Kalam"
-matplotlib.rcParams["mathtext.bf"] = "Kalam"
-matplotlib.rcParams["mathtext.cal"] = "Kalam"
-matplotlib.rcParams["mathtext.tt"] = "Kalam"
-matplotlib.rcParams["mathtext.sf"] = "Kalam"
+matplotlib.rcParams["mathtext.rm"] = "Caveat"
+matplotlib.rcParams["mathtext.it"] = "Caveat"
+matplotlib.rcParams["mathtext.bf"] = "Caveat"
+matplotlib.rcParams["mathtext.cal"] = "Caveat"
+matplotlib.rcParams["mathtext.tt"] = "Caveat"
+matplotlib.rcParams["mathtext.sf"] = "Caveat"
 
-# A4 at 160 dpi.
+# A4 at 160 dpi. Plain white sheet, blue ballpoint.
 W, H = 1323, 1870
 DPI = 160
-INK = (26, 34, 58)
-INK_HEX = "#1a223a"
-PAPER = (252, 250, 246)
-RULE = (176, 205, 230)
-MARGIN_RED = (214, 146, 146)
-MARGIN_L = 128
-MARGIN_R = 64
+INK = (36, 54, 130)
+INK_HEX = "#243682"
+PAPER = (255, 255, 255)
+MARGIN_L = 86
+MARGIN_R = 70
 CONTENT_W = W - MARGIN_L - MARGIN_R
-LINE0 = 36
-LINE_H = 48
-BOTTOM = H - 58
+LINE0 = 48
+LINE_H = 54
+BOTTOM = H - 64
 
 _FONT = {}
 _MATH = {}
@@ -53,7 +50,7 @@ _MATH = {}
 def font(size, bold=False):
     key = (size, bold)
     if key not in _FONT:
-        _FONT[key] = ImageFont.truetype(str(FONT_BOLD if bold else FONT_REG), size)
+        _FONT[key] = ImageFont.truetype(str(FONT_REG), size)
     return _FONT[key]
 
 
@@ -100,22 +97,16 @@ class Notes:
 
     def new_page(self, first=False):
         im = Image.new("RGB", (W, H), PAPER)
-        dr = ImageDraw.Draw(im)
-        y = LINE0
-        while y < H - 24:
-            dr.line([(48, y + LINE_H - 8), (W - 36, y + LINE_H - 8)], fill=RULE, width=1)
-            y += LINE_H
-        dr.line([(108, 28), (108, H - 28)], fill=MARGIN_RED, width=2)
         self.im = im
-        self.dr = dr
+        self.dr = ImageDraw.Draw(im)
         self.pages.append(im)
         self.page_no += 1
         self.line_i = 0
-        self.blank(1)
-        self.center("Assignment-2", 54 if first else 40, bold=True)
-        self.center("CHL-7201", 48 if first else 36, bold=True)
-        self.blank(1)
-        self.dr.text((W - 90, H - 46), str(self.page_no), font=font(26), fill=INK)
+        if first:
+            self.blank(1)
+            self.title("Assignment - 2", 72)
+            self.title("CHL-7201", 64)
+            self.blank(1)
 
     def ensure(self, n):
         if LINE0 + (self.line_i + n) * LINE_H > BOTTOM:
@@ -157,18 +148,29 @@ class Notes:
             lines.append(cur)
         return lines or [""]
 
-    def text(self, text, size=30, indent=0):
+    def text(self, text, size=32, indent=0):
         for line in self.wrap(text, size, indent):
             self._draw_line(line, size, indent, False, False)
+
+    def title(self, text, size):
+        self.ensure(2)
+        face = font(size)
+        y = LINE0 + self.line_i * LINE_H
+        baseline = y + 2 * LINE_H - 16
+        width = face.getlength(text)
+        x = (W - width) / 2
+        self.dr.text((x, baseline), text, font=face, fill=INK, anchor="ls")
+        self.dr.line([(x, baseline + 8), (x + width, baseline + 10)], fill=INK, width=3)
+        self.line_i += 2
 
     def center(self, text, size, bold=False):
         self._draw_line(text, size, 0, bold, True)
 
     def heading(self, text):
         self.ensure(1)
-        self._draw_line(text, 34, 0, True, False)
+        self._draw_line(text, 38, 0, True, False)
 
-    def math(self, latex, indent=28, fontsize=17):
+    def math(self, latex, indent=28, fontsize=19):
         im = render_math(latex, fontsize=fontsize)
         slots = max(1, int(np.ceil((im.height + 8) / LINE_H)))
         self.ensure(slots)
