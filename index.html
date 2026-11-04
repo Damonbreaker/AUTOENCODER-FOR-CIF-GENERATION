@@ -63,9 +63,9 @@
     .stat-sub { font-size: 0.72rem; color: var(--muted); }
     .text-success { color: var(--success); } .text-warn { color: var(--warn); } .text-danger { color: var(--danger); } .text-primary { color: var(--primary); }
     .btn-row { display: flex; gap: 8px; margin-top: 8px; flex-wrap: wrap; align-items: center; }
-    button, .btn { background: var(--surface2); color: var(--text); border: 1px solid var(--border); padding: 8px 12px; border-radius: 8px; font-size: 0.8rem; font-weight: 600; cursor: pointer; touch-action: manipulation; }
+    button, .btn, a.install-btn { background: var(--surface2); color: var(--text); border: 1px solid var(--border); padding: 8px 12px; border-radius: 8px; font-size: 0.8rem; font-weight: 600; cursor: pointer; touch-action: manipulation; }
     button.primary { background: var(--primary-dark); border-color: var(--primary); color: #fff; }
-    button.success { background: #15803d; border-color: var(--success); color: #fff; }
+    button.success, a.install-btn { background: #15803d; border-color: var(--success); color: #fff; display: inline-flex; align-items: center; justify-content: center; min-height: 44px; padding: 10px 14px; text-decoration: none; position: relative; z-index: 2; }
     .callout { border-radius: var(--radius); padding: 11px 13px; margin-bottom: 10px; border-left: 4px solid var(--primary); background: var(--info-bg); }
     .callout.warn { border-left-color: var(--warn); background: var(--warn-bg); }
     .callout.danger { border-left-color: var(--danger); background: var(--danger-bg); }
@@ -132,7 +132,8 @@
   <div class="card">
     <div class="card-title"><span>Install App, Camera Scanner & Care Notifications</span></div>
     <div class="btn-row">
-      <button type="button" class="success" id="installPwaBtn">Install App on Phone</button>
+      <a class="install-btn" id="installAndroidBtn" href="./MaaCare.apk" download="MaaCare.apk">Install on Android</a>
+      <a class="install-btn" id="installIphoneBtn" href="./maa-care.mobileconfig">Install on iPhone</a>
       <button type="button" class="primary" id="openCameraBtn">Open Camera</button>
       <button type="button" class="success" id="capturePhotoBtn" style="display:none;">Capture Report Photo</button>
       <button type="button" class="primary" id="enableNotificationsBtn">Enable Notifications</button>

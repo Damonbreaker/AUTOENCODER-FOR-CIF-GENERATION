@@ -1,4 +1,4 @@
-const CACHE_NAME = "maternal-health-pwa-v5";
+const CACHE_NAME = "maternal-health-pwa-v6";
 const ASSETS_TO_CACHE = [
   "./",
   "./index.html",
@@ -54,7 +54,7 @@ function xmlEscape(text) {
   return String(text).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
 }
 
-function profileResponse() {
+function profileResponse(request) {
   const page = new URL("./", self.registration.scope).href;
   return fetch(new URL("./assets/icon-180.png", self.registration.scope))
     .then((iconRes) => (iconRes.ok ? iconRes.arrayBuffer() : Promise.reject()))
@@ -66,6 +66,9 @@ function profileResponse() {
     })
     .catch(() => "")
     .then((icon) => {
+      const ua = (request && request.headers.get("user-agent")) || "";
+      const safari = /iphone|ipad|ipod/i.test(ua) && !/crios|fxios|edgios/i.test(ua);
+      const disposition = safari ? "inline" : 'attachment; filename="MaaCare.mobileconfig"';
       const iconXml = icon ? "<key>Icon</key>\n<data>" + icon + "</data>\n" : "";
       const xml = [
         '<?xml version="1.0" encoding="UTF-8"?>',
@@ -94,7 +97,7 @@ function profileResponse() {
         status: 200,
         headers: {
           "Content-Type": "application/x-apple-aspen-config",
-          "Content-Disposition": 'attachment; filename="MaaCare.mobileconfig"',
+          "Content-Disposition": disposition,
           "Cache-Control": "no-store"
         }
       });
@@ -108,7 +111,11 @@ self.addEventListener("fetch", (event) => {
   const requestUrl = new URL(event.request.url);
   if (requestUrl.origin !== self.location.origin) return;
   if (requestUrl.pathname.endsWith("/maa-care.mobileconfig")) {
-    event.respondWith(profileResponse());
+    event.respondWith(profileResponse(event.request));
+    return;
+  }
+  if (requestUrl.pathname.endsWith("/MaaCare.apk")) {
+    event.respondWith(fetch(event.request));
     return;
   }
 
