@@ -1,4 +1,4 @@
-const CACHE_NAME = "maternal-health-pwa-v3";
+const CACHE_NAME = "maternal-health-pwa-v9";
 const ASSETS_TO_CACHE = [
   "./",
   "./index.html",
@@ -50,12 +50,75 @@ self.addEventListener("activate", (event) => {
   );
 });
 
+function xmlEscape(text) {
+  return String(text).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+}
+
+function profileResponse(request) {
+  const page = new URL("./", self.registration.scope).href;
+  return fetch(new URL("./assets/icon-180.png", self.registration.scope))
+    .then((iconRes) => (iconRes.ok ? iconRes.arrayBuffer() : Promise.reject()))
+    .then((buffer) => {
+      const bytes = new Uint8Array(buffer);
+      let binary = "";
+      for (let i = 0; i < bytes.length; i++) binary += String.fromCharCode(bytes[i]);
+      return btoa(binary);
+    })
+    .catch(() => "")
+    .then((icon) => {
+      const ua = (request && request.headers.get("user-agent")) || "";
+      const safari = /iphone|ipad|ipod/i.test(ua) && !/crios|fxios|edgios/i.test(ua);
+      const disposition = safari ? "inline" : 'attachment; filename="MaaCare.mobileconfig"';
+      const iconXml = icon ? "<key>Icon</key>\n<data>" + icon + "</data>\n" : "";
+      const xml = [
+        '<?xml version="1.0" encoding="UTF-8"?>',
+        '<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">',
+        '<plist version="1.0"><dict>',
+        "<key>PayloadContent</key><array><dict>",
+        "<key>FullScreen</key><true/>",
+        "<key>IsRemovable</key><true/>",
+        "<key>Label</key><string>Maa Care</string>",
+        "<key>PayloadIdentifier</key><string>com.maacare.webclip</string>",
+        "<key>PayloadType</key><string>com.apple.webClip.managed</string>",
+        "<key>PayloadUUID</key><string>4E2B8A11-6C70-4D55-9A18-0F3C7B2E91AA</string>",
+        "<key>PayloadVersion</key><integer>1</integer>",
+        "<key>Precomposed</key><true/>",
+        "<key>URL</key><string>" + xmlEscape(page) + "</string>",
+        iconXml.trim(),
+        "</dict></array>",
+        "<key>PayloadDisplayName</key><string>Maa Care</string>",
+        "<key>PayloadIdentifier</key><string>com.maacare.profile</string>",
+        "<key>PayloadType</key><string>Configuration</string>",
+        "<key>PayloadUUID</key><string>91D4C0E7-2A58-4B63-8F10-6C5A9E3D47B2</string>",
+        "<key>PayloadVersion</key><integer>1</integer>",
+        "</dict></plist>"
+      ].filter(Boolean).join("\n");
+      const bytes = new TextEncoder().encode(xml);
+      return new Response(bytes, {
+        status: 200,
+        headers: {
+          "Content-Type": "application/x-apple-aspen-config",
+          "Content-Disposition": disposition,
+          "Content-Length": String(bytes.byteLength),
+          "Cache-Control": "no-store"
+        }
+      });
+    });
+}
+
 // Complete fetch event listener (Required by Chrome for PWA installability)
 self.addEventListener("fetch", (event) => {
   if (event.request.method !== "GET") return;
 
   const requestUrl = new URL(event.request.url);
   if (requestUrl.origin !== self.location.origin) return;
+  if (requestUrl.pathname.endsWith("/maa-care.mobileconfig")) {
+    event.respondWith(profileResponse(event.request));
+    return;
+  }
+  if (requestUrl.pathname.endsWith("/MaaCare.apk")) {
+    return;
+  }
 
   event.respondWith(
     caches.match(event.request).then((cachedResponse) => {

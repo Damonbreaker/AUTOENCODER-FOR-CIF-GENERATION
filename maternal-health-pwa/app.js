@@ -35,45 +35,33 @@
   }
 
   // -------------------------------------------------------------------------
-  // 1B. Native PWA Install Prompt Handler (beforeinstallprompt)
+  // 1B. Both install controls are ordinary links, so the tap itself downloads.
+  // Android: MaaCare.apk. iPhone: the home-screen profile.
   // -------------------------------------------------------------------------
-  var deferredInstallPrompt = null;
-  var installPwaBtn = document.getElementById("installPwaBtn");
+  var installAndroidBtn = document.getElementById("installAndroidBtn");
+  var installIphoneBtn = document.getElementById("installIphoneBtn");
   var pwaInstallStatus = document.getElementById("pwaInstallStatus");
 
-  window.addEventListener("beforeinstallprompt", function (e) {
-    e.preventDefault();
-    deferredInstallPrompt = e;
-    if (installPwaBtn) {
-      installPwaBtn.style.display = "inline-block";
-    }
-    if (pwaInstallStatus) {
-      pwaInstallStatus.textContent =
-        "App is ready to install! Tap 'Install App on Phone' above.";
-    }
-  });
-
-  if (installPwaBtn) {
-    installPwaBtn.addEventListener("click", async function () {
-      if (!deferredInstallPrompt) return;
-      deferredInstallPrompt.prompt();
-      var choiceResult = await deferredInstallPrompt.userChoice;
-      if (choiceResult && choiceResult.outcome === "accepted") {
-        installPwaBtn.style.display = "none";
-        if (pwaInstallStatus) {
-          pwaInstallStatus.textContent = "App installed on your phone!";
-        }
-      }
-      deferredInstallPrompt = null;
-    });
+  function noteInstall(message) {
+    if (pwaInstallStatus) pwaInstallStatus.textContent = message;
   }
 
-  window.addEventListener("appinstalled", function () {
-    if (installPwaBtn) installPwaBtn.style.display = "none";
-    if (pwaInstallStatus) {
-      pwaInstallStatus.textContent = "Maternal Health App installed!";
+  if (window.MaaCareAndroid) {
+    if (installAndroidBtn) installAndroidBtn.style.display = "none";
+    if (installIphoneBtn) installIphoneBtn.style.display = "none";
+    noteInstall("Maa Care is installed on this phone.");
+  } else {
+    if (installAndroidBtn) {
+      installAndroidBtn.addEventListener("click", function () {
+        noteInstall("Maa Care is downloading. Open the file to install it.");
+      });
     }
-  });
+    if (installIphoneBtn) {
+      installIphoneBtn.addEventListener("click", function () {
+        noteInstall("Profile downloading. Tap Allow, then open Settings and tap Install. Not Signed is normal.");
+      });
+    }
+  }
 
   // -------------------------------------------------------------------------
   // 2. Camera Access via navigator.mediaDevices.getUserMedia
@@ -258,7 +246,7 @@
         }
         showAppNotification(
           "Maternal Health App — Reminders Active",
-          "Daily reminders enabled for Ms. Rajni Singh (Rapeed D 7:00 AM, Glynamic MP2 + Ondero 5 8:45 AM, Lemon Water 11:15 AM & 3:15 PM, Obimet GX2 7:45 PM, Prohance HP 1 scoop 12.5 g at 9:30 PM)."
+          "Daily reminders enabled for Ms. Rajni Singh (7:30 AM Pantocid 40 empty stomach, 8:00 AM Gluconorm-G 3, Lupisit DM 10/500 with breakfast, 7:00 PM Gluconorm-G 3, Pioz MF 15 after dinner, Fibrovas at 9:30 PM)."
         );
       } else {
         if (notificationStatus) {
@@ -292,7 +280,7 @@
   // -------------------------------------------------------------------------
   var WEEKLY_DIET = [
     {
-      morning: "1 tsp soaked Methi Dana water + pinch of Cinnamon + Rapeed D -> 30-35m Walk -> 5 soaked & peeled Almonds + 3 soaked Walnuts",
+      morning: "1 tsp soaked Methi Dana water + pinch of Cinnamon -> 30-35m Walk -> 5 soaked & peeled Almonds + 3 soaked Walnuts",
       bf: "2 Oats Idli (or Red Rice/Dal Idli) + Toor Dal Sambar (1 tsp oil) + Chaas (with 1 tsp roasted ground Alsi/Flaxseed) + 1 level scoop (12.5 g) Prohance HP",
       midday: "150g Guava (अमरूद) + Lemon Water #1 with 1 tsp soaked Chia Seeds (20 mins soaked)",
       lunch: "Salad First + 2 katori Karela Sabzi + 1 katori Yellow Moong Dal + 2 Chokar Wheat Rotis (with Ajwain) + 1 glass Chaas (1.5 tsp oil)",
@@ -300,7 +288,7 @@
       dinner: "2 Split Green Moong Dal Chillas (stuffed with grated Lauki & 30g Low-Fat Paneer) + Dahi Raita (with 1 tsp ground Alsi) -> 1 level scoop (12.5 g) Prohance HP in 150 mL warm Skimmed Milk at 9:30 PM"
     },
     {
-      morning: "1 tsp soaked Methi Dana water + pinch of Cinnamon + Rapeed D -> 30-35m Walk -> 5 soaked & peeled Almonds + 3 soaked Walnuts",
+      morning: "1 tsp soaked Methi Dana water + pinch of Cinnamon -> 30-35m Walk -> 5 soaked & peeled Almonds + 3 soaked Walnuts",
       bf: "1 bowl Thick Veg Poha (with peas, beans & 2 tbsp steamed Sabut Moong sprouts) + Unsweetened Tea + 1 tsp ground Alsi + 1 level scoop (12.5 g) Prohance HP",
       midday: "150g Apple (सेब) + Lemon Water #1 with 1 tsp soaked Chia Seeds + Tender Coconut Water",
       lunch: "Salad First + 2 katori Methi/Lauki Paneer (or blanched-and-drained Palak with 60g Low-Fat Paneer) + 1 katori Chana Dal + 2 Chokar Wheat Rotis + Chaas",
@@ -308,7 +296,7 @@
       dinner: "2 Large Ragi/Oats/Dal Idlis + 1 bowl Drumstick (Munga) Toor Dal Sambar + Chaas (with 1 tsp ground Alsi) -> 1 level scoop (12.5 g) Prohance HP in 150 mL warm Skimmed Milk at 9:30 PM"
     },
     {
-      morning: "1 tsp soaked Methi Dana water + pinch of Cinnamon + Rapeed D -> 30-35m Walk -> 5 soaked & peeled Almonds + 3 soaked Walnuts",
+      morning: "1 tsp soaked Methi Dana water + pinch of Cinnamon -> 30-35m Walk -> 5 soaked & peeled Almonds + 3 soaked Walnuts",
       bf: "2 Besan Chillas stuffed with 50g grated Low-Fat Paneer & veggies + Mint Chutney + Chaas (with 1 tsp ground Alsi) + 1 level scoop (12.5 g) Prohance HP",
       midday: "150g Papaya (पपीता) + Lemon Water #1 with 1 tsp soaked Chia Seeds",
       lunch: "Salad First + 2 katori Lauki Sabzi + 1 katori Toor/Arhar Dal + 1 Chokar Roti + 1 small katori Red/Brown Rice + Curd",
@@ -316,7 +304,7 @@
       dinner: "1 bowl Brown Rice & Soya Chunks (Nutrela) Veg Tahri/Pulao (double veggies + 30g Soya Chunks) + Clear Veg Soup + Raita (with 1 tsp ground Alsi) -> 1 level scoop (12.5 g) Prohance HP in 150 mL warm Skimmed Milk at 9:30 PM"
     },
     {
-      morning: "1 tsp soaked Methi Dana water + pinch of Cinnamon + Rapeed D -> 30-35m Walk -> 5 soaked & peeled Almonds + 3 soaked Walnuts",
+      morning: "1 tsp soaked Methi Dana water + pinch of Cinnamon -> 30-35m Walk -> 5 soaked & peeled Almonds + 3 soaked Walnuts",
       bf: "1 bowl Coarse Wheat/Millet Rava Veg Upma + 1 tsp ground Alsi + 1 level scoop (12.5 g) Prohance HP in Skimmed Milk",
       midday: "150g Pear (नाशपाती) or Kiwi + Lemon Water #1 with 1 tsp soaked Chia Seeds + Coconut Water",
       lunch: "Salad First + 1 katori Mix Veg (Cabbage/Cauliflower/Beans) + 1 katori Methi/Lauki Moong Dal + 2 Multigrain/Jowar/Bajra Rotis + Chaas",
@@ -324,7 +312,7 @@
       dinner: "1 bowl Roasted Wheat/Ragi Vermicelli (सेवई) with veggies + 50g Roasted Low-Fat Paneer + Steamed Broccoli + Raita (with 1 tsp Alsi) -> 1 level scoop (12.5 g) Prohance HP in 150 mL warm Skimmed Milk at 9:30 PM"
     },
     {
-      morning: "1 tsp soaked Methi Dana water + pinch of Cinnamon + Rapeed D -> 30-35m Walk -> 5 soaked & peeled Almonds + 3 soaked Walnuts",
+      morning: "1 tsp soaked Methi Dana water + pinch of Cinnamon -> 30-35m Walk -> 5 soaked & peeled Almonds + 3 soaked Walnuts",
       bf: "1 bowl Steamed Sprouts (Sabut Green Moong + Kala Chana + Soybean Seeds) with lemon & cucumber + 1 tsp ground Alsi + 1 level scoop (12.5 g) Prohance HP",
       midday: "1 Orange (संतरा) or Mosambi + Lemon Water #1 with 1 tsp soaked Chia Seeds",
       lunch: "Salad First + 2 katori Kala Chana & Soya Chunks Sabzi (or Rajma) + 1 Multigrain Roti + 1 small katori Red/Brown Rice + Chaas",
@@ -332,7 +320,7 @@
       dinner: "1.5 katori Thick Yellow & Green Moong Dal + 1 Multigrain/Chokar Roti + Salad + Dahi (with 1 tsp Alsi) -> 1 level scoop (12.5 g) Prohance HP in 150 mL warm Skimmed Milk at 9:30 PM"
     },
     {
-      morning: "1 tsp soaked Methi Dana water + pinch of Cinnamon + Rapeed D -> 30-35m Walk -> 5 soaked & peeled Almonds + 3 soaked Walnuts",
+      morning: "1 tsp soaked Methi Dana water + pinch of Cinnamon -> 30-35m Walk -> 5 soaked & peeled Almonds + 3 soaked Walnuts",
       bf: "1 bowl Savory Veg Broken Wheat (Daliya) Khichdi (with Split Green Moong Dal & veggies) + Dahi (with 1 tsp ground Alsi) + 1 level scoop (12.5 g) Prohance HP",
       midday: "150g Guava or Plum (आलूबुखारा) + Lemon Water #1 with 1 tsp soaked Chia Seeds + Coconut Water",
       lunch: "Salad First + 2 katori Taroee (Ridge Gourd) & Munga (Drumstick) Sabzi + 1 katori Chana + Toor Dal + 2 Chokar Wheat Rotis + Raita",
@@ -340,7 +328,7 @@
       dinner: "1 large bowl Unsweetened Skimmed Milk + Rolled Oats (or Milk Daliya) cooked with pinch of Cinnamon, 1 tsp ground Alsi & 1 level scoop (12.5 g) Prohance HP stirred in (this is the 9:30 PM scoop; do not give another scoop later)"
     },
     {
-      morning: "1 tsp soaked Methi Dana water + pinch of Cinnamon + Rapeed D -> 30-35m Walk -> 5 soaked & peeled Almonds + 3 soaked Walnuts",
+      morning: "1 tsp soaked Methi Dana water + pinch of Cinnamon -> 30-35m Walk -> 5 soaked & peeled Almonds + 3 soaked Walnuts",
       bf: "1 Crisp Moong Dal / Oats Dosa + Toor Dal Sambar (or 1 low-oil Methi/Gobhi Chokar Paratha + Dahi) + 1 tsp ground Alsi + 1 level scoop (12.5 g) Prohance HP",
       midday: "150g Apple or Jamun/Papaya + Lemon Water #1 with 1 tsp soaked Chia Seeds",
       lunch: "Salad First + 2 katori Lobia (Black-Eyed Peas) / Rajma / Gwar Phali Beans Sabzi + 2 Multigrain Rotis + Chaas + Weekly Vitamin D3 60k Syrup right after lunch!",
@@ -401,9 +389,9 @@
       if (state.dailyDone[id]) doneCount++;
     }
     var statTasksEl = document.getElementById("statTasks");
-    if (statTasksEl) statTasksEl.textContent = doneCount + " / 12";
+    if (statTasksEl) statTasksEl.textContent = doneCount + " / " + taskBoxes.length;
     var badgeEl = document.getElementById("headerProgressBadge");
-    if (badgeEl) badgeEl.textContent = "Today: " + doneCount + "/12 Done";
+    if (badgeEl) badgeEl.textContent = "Today: " + doneCount + "/" + taskBoxes.length + " Done";
     var waterEl = document.getElementById("statWater");
     if (waterEl)
       waterEl.textContent =
@@ -425,12 +413,14 @@
     var menuBoxEl = document.getElementById("todayMenuBox");
     if (menuBoxEl) {
       menuBoxEl.innerHTML =
-        '<div><strong style="color:var(--primary);">6:45 AM &amp; 7:15 AM Morning:</strong> ' +
+        '<div><strong style="color:var(--primary);">6:45 AM &amp; 7:15 AM:</strong> ' +
         d.morning +
         "</div>" +
+        '<div><strong style="color:var(--primary);">7:30 AM:</strong> Pantocid 40, 1 tablet, empty stomach, sip of water. Breakfast is at 8:30.</div>' +
+        '<div><strong style="color:var(--primary);">8:00 AM:</strong> Gluconorm-G 3, 1 tablet, 30 minutes before breakfast.</div>' +
         '<div><strong style="color:var(--primary);">8:30 AM Breakfast:</strong> ' +
         d.bf +
-        "</div>" +
+        " With the meal, or right after it: Lupisit DM 10/500, 1 tablet.</div>" +
         '<div><strong style="color:var(--success);">11:15 AM Mid-Day:</strong> ' +
         d.midday +
         "</div>" +
@@ -440,9 +430,10 @@
         '<div><strong style="color:var(--warn);">4:30 PM Evening Snack:</strong> ' +
         d.snack +
         "</div>" +
-        '<div><strong style="color:var(--warn);">7:30 PM Dinner &amp; 9:30 PM Bedtime:</strong> ' +
+        '<div><strong style="color:var(--warn);">7:00 PM:</strong> Gluconorm-G 3, 1 tablet, 30 minutes before dinner.</div>' +
+        '<div><strong style="color:var(--warn);">7:30 PM Dinner:</strong> ' +
         d.dinner +
-        "</div>";
+        " Right after dinner: Pioz MF 15, 1 tablet. 9:30 PM bedtime: Fibrovas, 1 tablet.</div>";
     }
 
     var chkBoxes = document.querySelectorAll("input[data-chk]");
@@ -488,7 +479,7 @@
           " | PP: " +
           latest.pp +
           " mg/dL)",
-        body: "Continue Glynamic MP2 + Ondero 5 after breakfast, Obimet GX2 after 7:30 PM dinner, and the label Prohance HP dose: 1 level scoop (12.5 g) at 8:30 AM plus 1 level scoop (12.5 g) at 9:30 PM (25 g = 20.8 g protein). Do not use 1.5 scoops."
+        body: "Follow the 31 Oct 2026 sheet. 7:30 AM Pantocid 40 on an empty stomach. 8:00 AM Gluconorm-G 3. Lupisit DM 10/500 with breakfast. 7:00 PM Gluconorm-G 3. Pioz MF 15 right after dinner. Fibrovas at 9:30 PM bedtime. Rapeed-D, Glynamic MP 2, Ondero 5, and Obimet GX 2 are stopped. Keep Prohance HP at 1 level scoop (12.5 g) at 8:30 AM and 1 level scoop (12.5 g) at 9:30 PM."
       });
     } else {
       adv.push({
